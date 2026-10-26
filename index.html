@@ -14,12 +14,13 @@
     :root {
       --bg-primary: #F2F2F7;
       --bg-elevated: #FFFFFF;
-      --bg-glass: rgba(242, 242, 247, 0.82);
+      --bg-glass: rgba(242, 242, 247, 0.85);
       --bg-segmented: #E5E5EA;
       
-      --primary: #007AFF;
+      --primary: #0A84FF;
+      --primary-gradient: linear-gradient(180deg, #0A84FF 0%, #0062D2 100%);
       --primary-light: #F0F6FF;
-      --primary-dark: #0056B3;
+      --primary-dark: #0051B5;
       
       --success: #34C759;
       --success-bg: #E8F5E9;
@@ -64,7 +65,10 @@
       backdrop-filter: saturate(180%) blur(20px);
       -webkit-backdrop-filter: saturate(180%) blur(20px);
       border-bottom: 0.5px solid var(--border-hairline);
-      padding: 14px 20px 16px;
+      padding-top: max(14px, env(safe-area-inset-top));
+      padding-bottom: 14px;
+      padding-left: 20px;
+      padding-right: 20px;
     }
 
     .app-shell {
@@ -76,7 +80,6 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
       gap: 12px;
       flex-wrap: wrap;
     }
@@ -115,7 +118,7 @@
       align-items: center;
       justify-content: center;
       gap: 4px;
-      transition: transform 0.12s ease, opacity 0.12s ease, background 0.15s ease;
+      transition: transform 0.12s ease, opacity 0.12s ease;
       white-space: nowrap;
     }
 
@@ -125,8 +128,9 @@
     }
 
     .btn-ios-primary {
-      background: var(--primary);
+      background: var(--primary-gradient);
       color: #FFFFFF;
+      box-shadow: 0 3px 10px rgba(10, 132, 255, 0.3);
     }
 
     .btn-ios-secondary {
@@ -264,6 +268,7 @@
     input:focus, select:focus {
       border-color: var(--primary);
       background: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.15);
     }
 
     .grid-2 {
@@ -274,21 +279,24 @@
 
     .grid-3 {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px;
+      grid-template-columns: 1.1fr 1fr 1.4fr;
+      gap: 10px;
     }
 
-    @media (max-width: 540px) {
-      .grid-2, .grid-3 {
+    @media (max-width: 620px) {
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+      .grid-2 {
         grid-template-columns: 1fr;
       }
     }
 
     .btn {
       width: 100%;
-      height: 42px;
+      height: 44px;
       border: none;
-      border-radius: 11px;
+      border-radius: 12px;
       font-size: 0.9rem;
       font-weight: 600;
       cursor: pointer;
@@ -296,13 +304,20 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
+      transition: transform 0.12s ease, opacity 0.12s ease;
     }
 
     .btn:active { opacity: 0.85; transform: scale(0.98); }
-    .btn-sm { height: 32px; padding: 0 10px; font-size: 0.78rem; width: auto; }
-    .btn-primary { background: var(--primary); color: #FFFFFF; }
+    .btn-sm { height: 32px; padding: 0 10px; font-size: 0.78rem; width: auto; border-radius: 8px; }
+    
+    .btn-primary { 
+      background: var(--primary-gradient); 
+      color: #FFFFFF; 
+      box-shadow: 0 4px 12px rgba(10, 132, 255, 0.25);
+    }
+    
     .btn-success { background: var(--success); color: #FFFFFF; }
-    .btn-whatsapp { background: #25D366; color: #FFFFFF; font-weight: 700; }
+    .btn-whatsapp { background: #25D366; color: #FFFFFF; font-weight: 700; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25); }
     .btn-outline { background: var(--bg-primary); color: var(--text-primary); border: 0.5px solid var(--border-strong); }
     .btn-danger { background: var(--danger-bg); color: var(--danger); }
 
@@ -342,7 +357,7 @@
 
     .dose-highlight {
       background: var(--primary-light);
-      border: 0.5px solid rgba(0, 122, 255, 0.2);
+      border: 0.5px solid rgba(10, 132, 255, 0.2);
       color: var(--primary-dark);
       padding: 10px 12px;
       border-radius: 10px;
@@ -465,7 +480,7 @@
         </div>
         <div class="nav-actions">
           <button class="btn-ios btn-ios-secondary" onclick="sincronizarManual()" title="Sincronizar com a nuvem">🔄 Sincronizar</button>
-          <button class="btn-ios btn-ios-secondary" onclick="abrirConfigSync()" title="Configurar Token">⚙️ Token</button>
+          <button class="btn-ios btn-ios-secondary" onclick="abrirConfigSync()" title="Configurar Token e IA">⚙️ Token / IA</button>
           <button class="btn-ios btn-ios-secondary" onclick="enviarRelatorioWhatsApp()" title="Enviar relatório para Rayssa">📄 Relatório</button>
           <div class="parent-toggle">
             <button type="button" id="btnPai" class="parent-btn active" onclick="setParent('Wilson')">Wilson</button>
@@ -596,7 +611,7 @@
       </div>
 
       <div class="form-group">
-        <button type="button" class="btn btn-success" onclick="buscarBulaOnline()">🔍 Buscar Posologia Automática</button>
+        <button type="button" class="btn btn-success" onclick="buscarBulaOnline()">🔍 Buscar Posologia (Local + IA Gemini)</button>
       </div>
 
       <div id="bulaResultadoBox" class="bula-box" style="display:none;"></div>
@@ -644,22 +659,26 @@
     </div>
   </div>
 
-  <!-- MODAL CONFIG GIST SYNC -->
+  <!-- MODAL CONFIG GIST SYNC & GEMINI -->
   <div id="modalSync" class="modal-backdrop" onclick="if(event.target.id==='modalSync') fecharConfigSync()">
     <div class="modal-sheet">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-        <h3>Configurar Token do GitHub</h3>
+        <h3>Configurações & Chaves</h3>
         <button class="btn btn-outline btn-sm" onclick="fecharConfigSync()">✕</button>
       </div>
       <div class="form-group">
         <label>GitHub Personal Access Token (ghp_...)</label>
         <input type="password" id="inputToken" placeholder="Cole seu token aqui" />
       </div>
-      <p style="font-size:0.76rem; color:var(--text-secondary); margin-bottom:14px;">
-        Cole o mesmo token do GitHub no seu iPhone, iPad e celular da Rayssa para sincronizar automaticamente.
-      </p>
-      <div class="modal-footer">
-        <button class="btn btn-primary" onclick="salvarConfigSync()">Salvar Token</button>
+      <div class="form-group" style="margin-top: 12px;">
+        <label>Chave API do Gemini (Google AI Studio)</label>
+        <input type="password" id="inputGeminiKey" placeholder="AIzaSy..." />
+        <small style="color:var(--text-secondary); font-size:0.75rem; display:block; margin-top:4px;">
+          Opcional: Permite consultar posologias e bulas raras automaticamente na internet.
+        </small>
+      </div>
+      <div class="modal-footer" style="margin-top: 16px;">
+        <button class="btn btn-primary" onclick="salvarConfigSync()">Salvar Configurações</button>
       </div>
     </div>
   </div>
@@ -667,18 +686,19 @@
   <div id="toast">Salvo</div>
 
   <script>
-    const STORAGE_KEY = 'sos_febre_titanium_v1';
-    const SYNC_CONFIG_KEY = 'sos_febre_sync_config_v1';
+    const STORAGE_KEY = 'sos_febre_titanium_v3';
+    const SYNC_CONFIG_KEY = 'sos_febre_sync_config_v3';
 
     const BASE_BULAS_BR = [
-      { termos: ['dipirona', 'novalgina'], mgPorKg: 20, intervalo: 6, maxGotas: 40, nota: 'Dipirona: 15 a 25 mg/kg a cada 6h.' },
+      { termos: ['dipirona', 'novalgina', 'maxalgina'], mgPorKg: 20, intervalo: 6, maxGotas: 40, nota: 'Dipirona: 15 a 25 mg/kg a cada 6h.' },
       { termos: ['paracetamol', 'tylenol'], mgPorKg: 13, intervalo: 6, maxGotas: 35, nota: 'Paracetamol: 10 a 15 mg/kg a cada 6h.' },
-      { termos: ['ibuprofeno', 'alivium'], mgPorKg: 10, intervalo: 8, maxGotas: 40, nota: 'Ibuprofeno: 5 a 10 mg/kg a cada 8h.' }
+      { termos: ['ibuprofeno', 'alivium', 'buscofem', 'dalsy'], mgPorKg: 10, intervalo: 8, maxGotas: 40, nota: 'Ibuprofeno: 5 a 10 mg/kg a cada 8h.' },
+      { termos: ['amoxicilina', 'amoxil', 'clavulin'], mgPorKg: 16.6, intervalo: 8, maxGotas: 15, nota: 'Amoxicilina: ~16.6 mg/kg a cada 8h.' },
+      { termos: ['prednisolona', 'prelone', 'predsim'], mgPorKg: 1, intervalo: 24, maxGotas: 20, nota: 'Prednisolona: 1 mg/kg 1x ao dia.' }
     ];
 
     let estado = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
       parentAtivo: 'Wilson',
-      geminiKey: '',
       kidAtivoId: 'kid1',
       kids: [
         { id: 'kid1', nome: 'Zion', peso: 18.0 },
@@ -688,12 +708,10 @@
         { id: 'm1', nome: 'Dipirona Gotas', mg: 500, mlBase: 1, unidade: 'gotas', intervalo: 6, mgPorKg: 20, fatorPorKg: 0.8, maxDose: 40 },
         { id: 'm2', nome: 'Ibuprofeno Gotas', mg: 100, mlBase: 1, unidade: 'gotas', intervalo: 8, mgPorKg: 10, fatorPorKg: 2.0, maxDose: 40 }
       ],
-      logs: [],
-      deletedIds: [],
-      orderTime: 0
+      logs: []
     };
 
-    let syncConfig = JSON.parse(localStorage.getItem(SYNC_CONFIG_KEY)) || { token: '', gistId: '' };
+    let syncConfig = JSON.parse(localStorage.getItem(SYNC_CONFIG_KEY)) || { token: '', geminiKey: '', gistId: '' };
 
     renderizarTudo();
     if (syncConfig.token) baixarDaNuvem();
@@ -780,15 +798,17 @@
 
     function abrirConfigSync() {
       document.getElementById('inputToken').value = syncConfig.token || '';
+      document.getElementById('inputGeminiKey').value = syncConfig.geminiKey || '';
       document.getElementById('modalSync').classList.add('active');
     }
     function fecharConfigSync() { document.getElementById('modalSync').classList.remove('active'); }
     function salvarConfigSync() {
       syncConfig.token = document.getElementById('inputToken').value.trim();
+      syncConfig.geminiKey = document.getElementById('inputGeminiKey').value.trim();
       syncConfig.gistId = '';
       localStorage.setItem(SYNC_CONFIG_KEY, JSON.stringify(syncConfig));
       fecharConfigSync();
-      mostrarToast('Token salvo!');
+      mostrarToast('Configurações salvas!');
       baixarDaNuvem();
     }
 
@@ -889,12 +909,16 @@
       }
     }
 
-    function buscarBulaOnline() {
+    async function buscarBulaOnline() {
       const termo = document.getElementById('medNome').value.trim().toLowerCase();
+      const mgFrasco = parseFloat(document.getElementById('medMg').value);
       const box = document.getElementById('bulaResultadoBox');
-      if (!termo) { mostrarToast('Digite o nome'); return; }
+      if (!termo) { mostrarToast('Digite o nome do remédio'); return; }
 
       box.style.display = 'block';
+      box.innerHTML = '⏳ Consultando posologia...';
+
+      // 1. Base interna
       const enc = BASE_BULAS_BR.find(b => b.termos.some(t => termo.includes(t)));
       if (enc) {
         document.getElementById('medMgPorKg').value = enc.mgPorKg;
@@ -902,9 +926,35 @@
         document.getElementById('medMaxDose').value = enc.maxGotas;
         recalcularConversaoBula();
         box.innerHTML = `✅ <strong>Bula Localizada:</strong> ${enc.nota}`;
-      } else {
-        box.innerHTML = `ℹ️ Preencha os dados de mg/kg manualmente abaixo.`;
+        return;
       }
+
+      // 2. IA Gemini se configurada
+      if (syncConfig.geminiKey && navigator.onLine) {
+        try {
+          box.innerHTML = '⏳ Consultando IA Gemini...';
+          const prompt = `Farmacêutico pediátrico. Medicamento "${termo}" concentração "${mgFrasco || 'padrão'} mg". Responda APENAS JSON válido: {"mgPorKg": numero, "intervalo": horas, "maxDose": numero, "resumo": "explicacao"}`;
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${syncConfig.geminiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+          });
+          const data = await res.json();
+          const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+          const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            const info = JSON.parse(jsonMatch[0]);
+            document.getElementById('medMgPorKg').value = info.mgPorKg;
+            document.getElementById('medIntervalo').value = String(info.intervalo || 8);
+            document.getElementById('medMaxDose').value = info.maxDose || 40;
+            recalcularConversaoBula();
+            box.innerHTML = `✅ <strong>Bula (Gemini AI):</strong> ${info.resumo}`;
+            return;
+          }
+        } catch (e) {}
+      }
+
+      box.innerHTML = `ℹ️ Medicamento não encontrado na base rápida. Preencha os campos abaixo manualmente.`;
     }
 
     function salvarMedicamento() {
@@ -1006,8 +1056,6 @@
       if (reg) enviarRelatorioWhatsApp();
     }
 
-    function formatarMoeda(val) { return val; }
-
     function enviarRelatorioWhatsApp() {
       const kid = getFilhoAtivo();
       const logsKid = estado.logs.filter(l => l.kidNome === kid.nome).slice(0, 5);
@@ -1018,7 +1066,7 @@
       } else {
         logsKid.forEach(l => {
           texto += `• *${l.hora}* (${l.dataStr}) - Por: *${l.parent}*\n`;
-          if (l.temp) texto + `  🌡️ Temp: \`${l.temp}°C\`\n`;
+          if (l.temp) texto += `  🌡️ Temp: \`${l.temp}°C\`\n`;
           if (l.medNome) texto += `  💊 Med: ${l.medNome} (${l.dose})\n`;
           if (l.obs) texto += `  📝 \`${l.obs}\`\n`;
         });
