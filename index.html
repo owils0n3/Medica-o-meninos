@@ -365,6 +365,20 @@
       line-height: 1.4;
     }
 
+    .sync-bar {
+      background: #e0f2fe;
+      border: 1px solid #bae6fd;
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: #0369a1;
+      margin-bottom: 12px;
+    }
+
     #toast {
       position: fixed;
       bottom: 20px;
@@ -391,7 +405,7 @@
     <div class="header-content">
       <div class="header-title">
         <h1>🌡️ SOS Febre & Remédios</h1>
-        <small id="syncStatusText">⚡ Versão 4.0 (Link Curto Ativo)</small>
+        <small id="syncStatusText">⚡ Versão 4.1 (Com IA Gemini)</small>
       </div>
       <div class="parent-toggle">
         <button type="button" id="btnPai" class="parent-btn active" onclick="setParent('Wilson')">Wilson</button>
@@ -401,6 +415,14 @@
   </header>
 
   <div class="container">
+
+    <!-- BARRA DE CONFIGURAÇÃO RÁPIDA -->
+    <div class="sync-bar">
+      <div>
+        <strong>⚙️ IA Gemini:</strong> <span id="labelStatusGemini">Não configurada</span>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="abrirModalConfig()" style="width: auto;">Configurar</button>
+    </div>
 
     <!-- 1. SELETOR DE FILHOS -->
     <div class="card">
@@ -521,7 +543,7 @@
 
       <div class="form-group">
         <button type="button" class="btn btn-success" onclick="buscarBulaOnline()">
-          🔍 Buscar Posologia na Bula
+          🔍 Buscar Posologia na Bula (com IA)
         </button>
       </div>
 
@@ -570,10 +592,27 @@
     </div>
   </div>
 
+  <!-- MODAL: CONFIGURAÇÃO (GEMINI AI) -->
+  <div id="modalConfig" class="modal-backdrop">
+    <div class="modal">
+      <h3>⚙️ Configuração da IA Gemini</h3>
+      <div class="form-group">
+        <label>Chave da API do Gemini (Google AI Studio)</label>
+        <input type="password" id="cfgGeminiKey" placeholder="AIzaSy..." />
+        <small style="color:var(--muted); font-size:0.75rem; display:block; margin-top:4px;">
+          Insira sua chave gratuita para permitir que o app consulte bulas e posologias raras de medicamentos automaticamente na internet.
+        </small>
+      </div>
+      <div style="display:flex; gap:8px; margin-top:14px;">
+        <button class="btn btn-outline" onclick="fecharModais()">Fechar</button>
+        <button class="btn btn-primary" onclick="salvarConfigGemini()">Salvar Chave</button>
+      </div>
+    </div>
+  </div>
+
   <div id="toast">Salvo!</div>
 
   <script>
-    // 1. Limpa automaticamente qualquer Service Worker ou cache antigo preso no iPhone/iPad
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
     }
@@ -581,7 +620,7 @@
       caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
     }
 
-    const STORAGE_KEY = 'sos_febre_familia_v4';
+    const STORAGE_KEY = 'sos_febre_familia_v41';
 
     const BASE_BULAS_BR = [
       { termos: ['dipirona', 'novalgina', 'maxalgina'], mgPorKg: 20, intervalo: 6, maxGotas: 40, nota: 'Bula Dipirona: 15 a 25 mg/kg/dose a cada 6h.' },
@@ -600,9 +639,9 @@
       { termos: ['cetoprofeno', 'profids'], mgPorKg: 1, intervalo: 8, maxGotas: 50, nota: 'Bula Cetoprofeno gotas (20mg/mL): 1 gota/kg de 8/8h.' }
     ];
 
-    // Já vem com Zion (18kg) e Tito (10kg) configurados por padrão
     const defaultState = {
       parentAtivo: 'Wilson',
+      geminiKey: '',
       kidAtivoId: 'kid1',
       kids: [
         { id: 'kid1', nome: 'Zion', peso: 18.0 },
@@ -619,7 +658,7 @@
     let state = carregarEstadoLocal();
 
     function carregarEstadoLocal() {
-      const salvo = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('sos_febre_familia_v3') || localStorage.getItem('sos_febre_familia_v2');
+      const salvo = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('sos_febre_familia_v4');
       if (salvo) {
         try {
           const parsed = JSON.parse(salvo);
@@ -634,7 +673,6 @@
       renderizarTudo();
     }
 
-    // Conversores para texto 100% seguro no link do WhatsApp (sem %20, sem :, sem Base64)
     function toToken(str) {
       return String(str || '')
         .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -647,13 +685,11 @@
       return String(str || '').replace(/_/g, ' ');
     }
 
-    // 2. LÊ O LINK CURTO DO WHATSAPP E ATUALIZA FILHOS, PESOS, REMÉDIOS E HISTÓRICO
     function receberSincronizacaoPeloLink() {
       const p = new URLSearchParams(window.location.search);
       if (!p.has('s')) return;
 
       try {
-        // Atualiza lista de filhos e pesos enviados no link (ex: k=Zion-18_Tito-10)
         if (p.get('k')) {
           const pares = p.get('k').split('_').filter(Boolean);
           pares.forEach((par, idx) => {
@@ -671,7 +707,6 @@
           });
         }
 
-        // Seleciona o filho do registro
         const kidNome = fromToken(p.get('c') || 'Zion');
         const kidPeso = parseFloat(p.get('w')) || 18;
         let kid = state.kids.find(k => toToken(k.nome).toLowerCase() === toToken(kidNome).toLowerCase());
@@ -683,7 +718,6 @@
         }
         state.kidAtivoId = kid.id;
 
-        // Verifica se há um medicamento novo no link e cadastra na Farmacinha se não existir
         const medNome = fromToken(p.get('m') || '');
         const medIntervalo = parseInt(p.get('i'), 10) || 6;
         let medObj = null;
@@ -708,7 +742,6 @@
           }
         }
 
-        // Registra o lançamento no histórico e dispara o cronômetro
         const tsSegundos = parseInt(p.get('ts'), 10);
         const ts = tsSegundos ? tsSegundos * 1000 : Date.now();
         const hora = (p.get('h') || '00-00').replace('-', ':');
@@ -851,8 +884,10 @@
       }
     }
 
-    function buscarBulaOnline() {
+    // BUSCA DE BULA LOCAL + SUPORTE À IA GEMINI CONFIGURADA PELO USUÁRIO
+    async function buscarBulaOnline() {
       const nomeBusca = document.getElementById('medNome').value.trim().toLowerCase();
+      const mgFrasco = parseFloat(document.getElementById('medMg').value);
       const box = document.getElementById('bulaResultadoBox');
 
       if (!nomeBusca) {
@@ -861,6 +896,9 @@
       }
 
       box.style.display = 'block';
+      box.innerHTML = '⏳ Consultando posologia...';
+
+      // 1. Procura na base interna de bulas brasileiras
       const encontrado = BASE_BULAS_BR.find(b => b.termos.some(t => nomeBusca.includes(t)));
       if (encontrado) {
         document.getElementById('medMgPorKg').value = encontrado.mgPorKg;
@@ -874,7 +912,32 @@
         return;
       }
 
-      box.innerHTML = `ℹ️ <a href="https://www.google.com/search?q=bula+posologia+pediatrica+mg+kg+${encodeURIComponent(nomeBusca)}" target="_blank" style="color:#15803d;font-weight:700;">Toque aqui para ver a Bula no Google</a> e digite quantos <strong>mg por kg</strong> ela pede no campo abaixo.`;
+      // 2. Se não estiver na base interna, usa a chave do Gemini configurada pelo usuário
+      if (state.geminiKey && navigator.onLine) {
+        try {
+          box.innerHTML = '⏳ Consultando IA Gemini...';
+          const prompt = `Você é um farmacêutico pediátrico. Medicamento "${nomeBusca}" concentração "${mgFrasco || 'padrão'} mg". Responda APENAS um JSON válido: {"mgPorKg": numero, "intervalo": horas, "maxDose": numero, "resumo": "explicacao curta"}`;
+          const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${state.geminiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+          });
+          const data = await resp.json();
+          const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+          const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            const info = JSON.parse(jsonMatch[0]);
+            document.getElementById('medMgPorKg').value = info.mgPorKg;
+            document.getElementById('medIntervalo').value = String(info.intervalo || 8);
+            document.getElementById('medMaxDose').value = info.maxDose || 40;
+            recalcularConversaoBula();
+            box.innerHTML = `✅ <strong>Bula Online (Gemini AI):</strong> ${info.resumo}`;
+            return;
+          }
+        } catch (err) {}
+      }
+
+      box.innerHTML = `ℹ️ Medicamento não encontrado na base rápida. <a href="https://www.google.com/search?q=bula+posologia+pediatrica+mg+kg+${encodeURIComponent(nomeBusca)}" target="_blank" style="color:#15803d;font-weight:700;">Toque para ver no Google</a> e preencha a "Dose da Bula (mg por kg)" manualmente abaixo.`;
     }
 
     function salvarMedicamento() {
@@ -1025,7 +1088,6 @@
       enviarLogWhatsApp(reg);
     }
 
-    // 3. GERA LINK CURTO, 100% VERDE E SEM NENHUM CARACTERE QUE QUEBRE NO WHATSAPP
     function enviarLogWhatsApp(reg) {
       let proxTexto = 'Sem medicação (apenas aferição)';
       if (reg.medNome && reg.intervalo) {
@@ -1034,7 +1096,6 @@
         proxTexto = `*${horaProx}* (intervalo de ${reg.intervalo}h)`;
       }
 
-      // Empacota todos os filhos e pesos de forma ultracurta (ex: Zion-18_Tito-10)
       const kidsToken = state.kids.map(k => `${toToken(k.nome)}-${k.peso}`).join('_');
       const baseUrl = window.location.origin + window.location.pathname;
 
@@ -1079,6 +1140,15 @@
     function renderizarTudo() {
       document.getElementById('btnPai').classList.toggle('active', state.parentAtivo === 'Wilson');
       document.getElementById('btnMae').classList.toggle('active', state.parentAtivo === 'Rayssa');
+      
+      const statusGemini = document.getElementById('labelStatusGemini');
+      if (state.geminiKey) {
+        statusGemini.textContent = 'Ativa (IA pronta)';
+        statusGemini.style.color = 'var(--success)';
+      } else {
+        statusGemini.textContent = 'Não configurada (Opcional)';
+        statusGemini.style.color = 'var(--muted)';
+      }
 
       const kidAtivo = getFilhoAtivo();
       document.getElementById('nomeFilhoAtivo').textContent = kidAtivo.nome;
@@ -1168,6 +1238,18 @@
       state.logs = state.logs.filter(l => toToken(l.kidNome).toLowerCase() !== toToken(kid.nome).toLowerCase());
       salvarEstado();
       mostrarToast('🗑️ Histórico limpo');
+    }
+
+    function abrirModalConfig() {
+      document.getElementById('cfgGeminiKey').value = state.geminiKey || '';
+      document.getElementById('modalConfig').classList.add('active');
+    }
+
+    function salvarConfigGemini() {
+      state.geminiKey = document.getElementById('cfgGeminiKey').value.trim();
+      fecharModais();
+      salvarEstado();
+      mostrarToast('✅ Chave da IA salva com sucesso!');
     }
 
     function fecharModais() {
