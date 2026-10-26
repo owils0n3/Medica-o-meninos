@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>SOS Febre & Medicação</title>
+  <title>Rocha Batista</title>
 
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="SOS Febre" />
+  <meta name="apple-mobile-web-app-title" content="Rocha Batista" />
   <meta name="theme-color" content="#F2F2F7" />
 
   <style>
     :root {
       --bg-primary: #F2F2F7;
       --bg-elevated: #FFFFFF;
-      --bg-glass: rgba(242, 242, 247, 0.85);
+      --bg-glass: rgba(242, 242, 247, 0.88);
       --bg-segmented: #E5E5EA;
       
       --primary: #0A84FF;
@@ -65,7 +65,7 @@
       backdrop-filter: saturate(180%) blur(20px);
       -webkit-backdrop-filter: saturate(180%) blur(20px);
       border-bottom: 0.5px solid var(--border-hairline);
-      padding-top: max(14px, env(safe-area-inset-top));
+      padding-top: calc(env(safe-area-inset-top) + 12px);
       padding-bottom: 14px;
       padding-left: 20px;
       padding-right: 20px;
@@ -263,6 +263,9 @@
       background: var(--bg-primary);
       color: var(--text-primary);
       outline: none;
+      box-sizing: border-box;
+      -webkit-appearance: none;
+      appearance: none;
     }
 
     input:focus, select:focus {
@@ -279,7 +282,7 @@
 
     .grid-3 {
       display: grid;
-      grid-template-columns: 1.1fr 1fr 1.4fr;
+      grid-template-columns: 1fr 1fr 1.3fr;
       gap: 10px;
     }
 
@@ -475,8 +478,8 @@
     <div class="app-shell">
       <div class="nav-bar">
         <div class="brand-title">
-          <span>Gestão Pediátrica</span>
-          <h1>SOS Febre & Remédios</h1>
+          <span>Família</span>
+          <h1>Rocha Batista</h1>
         </div>
         <div class="nav-actions">
           <button class="btn-ios btn-ios-secondary" onclick="sincronizarManual()" title="Sincronizar com a nuvem">🔄 Sincronizar</button>
@@ -686,8 +689,8 @@
   <div id="toast">Salvo</div>
 
   <script>
-    const STORAGE_KEY = 'sos_febre_titanium_v3';
-    const SYNC_CONFIG_KEY = 'sos_febre_sync_config_v3';
+    const STORAGE_KEY = 'rocha_batista_febre_v1';
+    const SYNC_CONFIG_KEY = 'rocha_batista_sync_config_v1';
 
     const BASE_BULAS_BR = [
       { termos: ['dipirona', 'novalgina', 'maxalgina'], mgPorKg: 20, intervalo: 6, maxGotas: 40, nota: 'Dipirona: 15 a 25 mg/kg a cada 6h.' },
@@ -730,7 +733,7 @@
         });
         if (res.ok) {
           const gists = await res.json();
-          const meuGist = gists.find(g => g.files && g.files['sos_febre_dados.json']);
+          const meuGist = gists.find(g => g.files && g.files['rocha_batista_febre.json']);
           if (meuGist) {
             syncConfig.gistId = meuGist.id;
             localStorage.setItem(SYNC_CONFIG_KEY, JSON.stringify(syncConfig));
@@ -750,7 +753,7 @@
         });
         if (res.ok) {
           const data = await res.json();
-          const arquivo = data.files['sos_febre_dados.json'];
+          const arquivo = data.files['rocha_batista_febre.json'];
           if (arquivo) {
             const dadosNuvem = JSON.parse(arquivo.content);
             mesclarDadosNuvem(dadosNuvem);
@@ -766,8 +769,8 @@
       try {
         const headers = { 'Authorization': `token ${syncConfig.token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
         const body = {
-          description: "Sincronização SOS Febre & Medicação",
-          files: { "sos_febre_dados.json": { content: JSON.stringify(estado, null, 2) } }
+          description: "Sincronização Rocha Batista Febre & Medicação",
+          files: { "rocha_batista_febre.json": { content: JSON.stringify(estado, null, 2) } }
         };
 
         let url = 'https://api.github.com/gists';
@@ -918,7 +921,6 @@
       box.style.display = 'block';
       box.innerHTML = '⏳ Consultando posologia...';
 
-      // 1. Base interna
       const enc = BASE_BULAS_BR.find(b => b.termos.some(t => termo.includes(t)));
       if (enc) {
         document.getElementById('medMgPorKg').value = enc.mgPorKg;
@@ -929,7 +931,6 @@
         return;
       }
 
-      // 2. IA Gemini se configurada
       if (syncConfig.geminiKey && navigator.onLine) {
         try {
           box.innerHTML = '⏳ Consultando IA Gemini...';
