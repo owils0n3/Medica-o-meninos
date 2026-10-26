@@ -67,7 +67,7 @@
     }
 
     .header-title small {
-      color: #94a3b8;
+      color: #38bdf8;
       font-size: 0.75rem;
       display: block;
     }
@@ -147,7 +147,6 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      transition: all 0.15s;
     }
 
     .kid-tab.active {
@@ -230,7 +229,6 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      transition: opacity 0.15s;
     }
 
     .btn:active { opacity: 0.8; }
@@ -367,19 +365,6 @@
       line-height: 1.4;
     }
 
-    .sync-bar {
-      background: #e0f2fe;
-      border: 1px solid #bae6fd;
-      border-radius: 12px;
-      padding: 10px 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.8rem;
-      color: #0369a1;
-    }
-
     #toast {
       position: fixed;
       bottom: 20px;
@@ -406,7 +391,7 @@
     <div class="header-content">
       <div class="header-title">
         <h1>🌡️ SOS Febre & Remédios</h1>
-        <small id="syncStatusText">Sincronizado no aparelho</small>
+        <small id="syncStatusText">⚡ Versão 4.0 (Link Curto Ativo)</small>
       </div>
       <div class="parent-toggle">
         <button type="button" id="btnPai" class="parent-btn active" onclick="setParent('Wilson')">Wilson</button>
@@ -416,17 +401,6 @@
   </header>
 
   <div class="container">
-
-    <!-- BARRA DE SINCRONIZAÇÃO CASAL -->
-    <div class="sync-bar">
-      <div>
-        <strong>🔗 Nuvem do Casal:</strong> <span id="labelCodigoCasal">meninos-wr-2026</span>
-      </div>
-      <div style="display:flex; gap:6px;">
-        <button class="btn btn-outline btn-sm" onclick="sincronizarNuvem(true)">🔄 Atualizar</button>
-        <button class="btn btn-outline btn-sm" onclick="abrirModalConfig()">⚙️ Config</button>
-      </div>
-    </div>
 
     <!-- 1. SELETOR DE FILHOS -->
     <div class="card">
@@ -444,7 +418,7 @@
         <button class="btn btn-primary btn-sm" onclick="abrirModalMed()">+ Novo Remédio</button>
       </div>
       <p style="font-size:0.78rem; color:var(--muted); margin-bottom:10px;">
-        Doses calculadas automaticamente para <strong id="pesoFilhoAtivo">0 kg</strong> com controle de horário liberado.
+        Doses calculadas para <strong id="pesoFilhoAtivo">0 kg</strong> com controle automático do horário liberado.
       </p>
       <div id="medsContainer" class="med-list"></div>
     </div>
@@ -462,7 +436,7 @@
           </div>
           <div>
             <label>Temperatura (°C)</label>
-            <input type="number" step="0.1" id="regTemp" placeholder="Ex: 39.0" />
+            <input type="number" step="0.1" id="regTemp" placeholder="Ex: 38.5" />
           </div>
           <div>
             <label>Medicamento Dado</label>
@@ -484,8 +458,8 @@
         </div>
 
         <div class="grid-2" style="margin-top: 8px;">
-          <button type="submit" class="btn btn-primary">✅ Salvar Registro</button>
-          <button type="button" class="btn btn-whatsapp" onclick="salvarEEnviarWhats()">📲 Salvar e Avisar no Whats</button>
+          <button type="submit" class="btn btn-primary">✅ Só Salvar</button>
+          <button type="button" class="btn btn-whatsapp" onclick="salvarEEnviarWhats()">📲 Salvar e Sincronizar no Whats</button>
         </div>
       </form>
     </div>
@@ -526,8 +500,6 @@
   <div id="modalMed" class="modal-backdrop">
     <div class="modal">
       <h3>💊 Cadastrar ou Buscar Medicamento</h3>
-      <input type="hidden" id="editMedId" />
-
       <div class="form-group">
         <label>1. Nome do Remédio (ou Princípio Ativo) *</label>
         <input type="text" id="medNome" placeholder="Ex: Ibuprofeno, Dipirona, Amoxicilina..." />
@@ -549,7 +521,7 @@
 
       <div class="form-group">
         <button type="button" class="btn btn-success" onclick="buscarBulaOnline()">
-          🔍 Buscar Posologia na Bula Online
+          🔍 Buscar Posologia na Bula
         </button>
       </div>
 
@@ -598,40 +570,24 @@
     </div>
   </div>
 
-  <!-- MODAL: CONFIGURAÇÃO -->
-  <div id="modalConfig" class="modal-backdrop">
-    <div class="modal">
-      <h3>⚙️ Sincronização (Wilson & Rayssa)</h3>
-      <div class="form-group">
-        <label>Código Único da Família</label>
-        <input type="text" id="cfgSyncCode" placeholder="Ex: meninos-wr-2026" />
-        <small style="color:var(--muted); font-size:0.75rem; display:block; margin-top:4px;">
-          Mantenha o mesmo código nos dois celulares.
-        </small>
-      </div>
-
-      <div class="form-group">
-        <label>Chave Gemini AI (Opcional - para ler bulas raras)</label>
-        <input type="password" id="cfgGeminiKey" placeholder="AIzaSy..." />
-      </div>
-
-      <div style="display:flex; gap:8px; margin-top:14px;">
-        <button class="btn btn-outline" onclick="fecharModais()">Fechar</button>
-        <button class="btn btn-primary" onclick="salvarConfig()">Salvar e Sincronizar</button>
-      </div>
-    </div>
-  </div>
-
   <div id="toast">Salvo!</div>
 
   <script>
-    const STORAGE_KEY = 'sos_febre_familia_v3';
+    // 1. Limpa automaticamente qualquer Service Worker ou cache antigo preso no iPhone/iPad
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
+    }
+    if ('caches' in window) {
+      caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
+    }
+
+    const STORAGE_KEY = 'sos_febre_familia_v4';
 
     const BASE_BULAS_BR = [
       { termos: ['dipirona', 'novalgina', 'maxalgina'], mgPorKg: 20, intervalo: 6, maxGotas: 40, nota: 'Bula Dipirona: 15 a 25 mg/kg/dose a cada 6h.' },
       { termos: ['paracetamol', 'tylenol'], mgPorKg: 13, intervalo: 6, maxGotas: 35, nota: 'Bula Paracetamol: 10 a 15 mg/kg/dose a cada 6h.' },
       { termos: ['ibuprofeno', 'alivium', 'buscofem', 'dalsy'], mgPorKg: 10, intervalo: 8, maxGotas: 40, nota: 'Bula Ibuprofeno: 5 a 10 mg/kg/dose a cada 6h a 8h.' },
-      { termos: ['amoxicilina', 'amoxil', 'clavulin', 'novamox'], mgPorKg: 16.6, intervalo: 8, maxGotas: 15, nota: 'Bula Amoxicilina: 50 mg/kg/dia dividido de 8 em 8 horas (~16,6 mg/kg/dose).' },
+      { termos: ['amoxicilina', 'amoxil', 'clavulin', 'novamox'], mgPorKg: 16.6, intervalo: 8, maxGotas: 15, nota: 'Bula Amoxicilina: 50 mg/kg/dia dividido de 8/8h (~16,6 mg/kg/dose).' },
       { termos: ['azitromicina', 'astro', 'zitromax'], mgPorKg: 10, intervalo: 24, maxGotas: 12, nota: 'Bula Azitromicina: 10 mg/kg 1x ao dia (24/24h).' },
       { termos: ['prednisolona', 'prelone', 'predsim'], mgPorKg: 1, intervalo: 24, maxGotas: 20, nota: 'Bula Prednisolona: 1 a 2 mg/kg/dia.' },
       { termos: ['cefalexina', 'keflex'], mgPorKg: 12.5, intervalo: 6, maxGotas: 15, nota: 'Bula Cefalexina: 25 a 50 mg/kg/dia dividido de 6/6h.' },
@@ -644,16 +600,13 @@
       { termos: ['cetoprofeno', 'profids'], mgPorKg: 1, intervalo: 8, maxGotas: 50, nota: 'Bula Cetoprofeno gotas (20mg/mL): 1 gota/kg de 8/8h.' }
     ];
 
-    // IMPORTANTE: updatedAt começa em 0 para não bloquear a primeira sincronização no celular da Rayssa!
+    // Já vem com Zion (18kg) e Tito (10kg) configurados por padrão
     const defaultState = {
       parentAtivo: 'Wilson',
-      syncCode: 'meninos-wr-2026',
-      geminiKey: '',
       kidAtivoId: 'kid1',
-      updatedAt: 0,
       kids: [
         { id: 'kid1', nome: 'Zion', peso: 18.0 },
-        { id: 'kid2', nome: 'Filho 2', peso: 14.0 }
+        { id: 'kid2', nome: 'Tito', peso: 10.0 }
       ],
       meds: [
         { id: 'm1', nome: 'Dipirona Gotas', mg: 500, mlBase: 1, unidade: 'gotas', intervalo: 6, mgPorKg: 20, fatorPorKg: 0.8, maxDose: 40 },
@@ -666,7 +619,7 @@
     let state = carregarEstadoLocal();
 
     function carregarEstadoLocal() {
-      const salvo = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('sos_febre_familia_v2');
+      const salvo = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('sos_febre_familia_v3') || localStorage.getItem('sos_febre_familia_v2');
       if (salvo) {
         try {
           const parsed = JSON.parse(salvo);
@@ -676,141 +629,121 @@
       return JSON.parse(JSON.stringify(defaultState));
     }
 
-    function salvarEstado(enviarNuvem = true) {
-      state.updatedAt = Date.now();
+    function salvarEstado() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       renderizarTudo();
-      if (enviarNuvem) publicarNaNuvem();
     }
 
-    // 1. Lê o Link Curto do WhatsApp (Sem quebrar!)
-    function checarLinkCurtoWhatsApp() {
+    // Conversores para texto 100% seguro no link do WhatsApp (sem %20, sem :, sem Base64)
+    function toToken(str) {
+      return String(str || '')
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .trim()
+        .replace(/\s+/g, '_')
+        .replace(/[^a-zA-Z0-9._-]/g, '');
+    }
+
+    function fromToken(str) {
+      return String(str || '').replace(/_/g, ' ');
+    }
+
+    // 2. LÊ O LINK CURTO DO WHATSAPP E ATUALIZA FILHOS, PESOS, REMÉDIOS E HISTÓRICO
+    function receberSincronizacaoPeloLink() {
       const p = new URLSearchParams(window.location.search);
       if (!p.has('s')) return;
 
       try {
-        if (p.get('c')) state.syncCode = p.get('c');
+        // Atualiza lista de filhos e pesos enviados no link (ex: k=Zion-18_Tito-10)
+        if (p.get('k')) {
+          const pares = p.get('k').split('_').filter(Boolean);
+          pares.forEach((par, idx) => {
+            const [nomeTok, pesoStr] = par.split('-');
+            const nomeLimpo = fromToken(nomeTok);
+            const pesoNum = parseFloat(pesoStr);
+            if (nomeLimpo && pesoNum > 0) {
+              const existente = state.kids.find(x => toToken(x.nome).toLowerCase() === nomeTok.toLowerCase());
+              if (existente) {
+                existente.peso = pesoNum;
+              } else {
+                state.kids.push({ id: 'kid_' + idx + '_' + Date.now(), nome: nomeLimpo, peso: pesoNum });
+              }
+            }
+          });
+        }
 
-        const kidNome = p.get('kn') || 'Zion';
-        const kidPeso = parseFloat(p.get('kw')) || 18;
-        let kid = state.kids.find(k => k.nome.toLowerCase() === kidNome.toLowerCase());
-        if (kid) {
-          kid.peso = kidPeso;
-        } else {
+        // Seleciona o filho do registro
+        const kidNome = fromToken(p.get('c') || 'Zion');
+        const kidPeso = parseFloat(p.get('w')) || 18;
+        let kid = state.kids.find(k => toToken(k.nome).toLowerCase() === toToken(kidNome).toLowerCase());
+        if (!kid) {
           kid = { id: 'kid_' + Date.now(), nome: kidNome, peso: kidPeso };
           state.kids.unshift(kid);
+        } else {
+          kid.peso = kidPeso;
         }
         state.kidAtivoId = kid.id;
 
-        const ts = parseInt(p.get('ts'), 10) || Date.now();
-        const jaExiste = state.logs.some(l => Math.abs(l.timestamp - ts) < 5000 && l.kidNome === kid.nome);
+        // Verifica se há um medicamento novo no link e cadastra na Farmacinha se não existir
+        const medNome = fromToken(p.get('m') || '');
+        const medIntervalo = parseInt(p.get('i'), 10) || 6;
+        let medObj = null;
 
-        if (!jaExiste && (p.get('t') || p.get('mn'))) {
-          const medNome = p.get('mn') || '';
-          const medIntervalo = parseInt(p.get('mi'), 10) || 6;
-          let medObj = state.meds.find(m => m.nome.toLowerCase() === medNome.toLowerCase());
+        if (medNome && medNome !== 'Nenhum') {
+          medObj = state.meds.find(m => toToken(m.nome).toLowerCase() === toToken(medNome).toLowerCase());
+          if (!medObj) {
+            const fator = parseFloat(p.get('f')) || 1;
+            const unid = p.get('u') || 'gotas';
+            medObj = {
+              id: 'med_' + Date.now(),
+              nome: medNome,
+              mg: 0,
+              mlBase: 1,
+              unidade: unid,
+              intervalo: medIntervalo,
+              mgPorKg: 10,
+              fatorPorKg: fator,
+              maxDose: 40
+            };
+            state.meds.push(medObj);
+          }
+        }
 
-          const novoLog = {
+        // Registra o lançamento no histórico e dispara o cronômetro
+        const tsSegundos = parseInt(p.get('ts'), 10);
+        const ts = tsSegundos ? tsSegundos * 1000 : Date.now();
+        const hora = (p.get('h') || '00-00').replace('-', ':');
+        const dataStr = (p.get('dt') || '').replace('-', '/') || new Date(ts).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+        const temp = p.get('t') && p.get('t') !== '0' ? p.get('t') : '';
+        const dose = p.get('d') && p.get('d') !== '0' ? fromToken(p.get('d')) : '';
+        const obs = p.get('o') ? fromToken(p.get('o')) : '';
+        const autor = fromToken(p.get('p') || 'Wilson');
+
+        const jaExiste = state.logs.some(l => l.hora === hora && toToken(l.kidNome) === toToken(kid.nome) && l.medNome === (medObj ? medObj.nome : medNome));
+
+        if (!jaExiste && (temp || medNome !== 'Nenhum')) {
+          state.logs.unshift({
             id: 'log_' + ts,
             kidId: kid.id,
             kidNome: kid.nome,
             kidPeso: kid.peso,
-            parent: p.get('p') || 'Wilson',
-            hora: p.get('h') || '00:00',
-            dataStr: p.get('dt') || new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+            parent: autor,
+            hora,
+            dataStr,
             timestamp: ts,
-            temp: p.get('t') || '',
-            medId: medObj ? medObj.id : (medNome ? 'm_sync' : ''),
-            medNome: medNome,
+            temp,
+            medId: medObj ? medObj.id : '',
+            medNome: medNome !== 'Nenhum' ? medNome : '',
             intervalo: medIntervalo,
-            dose: p.get('d') || '',
-            obs: p.get('o') || ''
-          };
-          state.logs.unshift(novoLog);
+            dose,
+            obs
+          });
         }
 
-        state.updatedAt = Date.now();
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
         window.history.replaceState({}, document.title, window.location.pathname);
-        mostrarToast('✅ Atualizado pelo link do WhatsApp!');
+        mostrarToast('✅ Sincronizado pelo link do WhatsApp!');
       } catch (e) {
-        console.error('Erro ao ler link curto:', e);
-      }
-    }
-
-    // 2. Sincronização na Nuvem Inteligente (Mescla registros dos dois celulares)
-    function getTopicoNuvem() {
-      const limpo = (state.syncCode || 'meninos-wr-2026').toLowerCase().replace(/[^a-z0-9_-]/g, '');
-      return 'sos_febre_v3_' + limpo;
-    }
-
-    async function publicarNaNuvem() {
-      if (!navigator.onLine) return;
-      try {
-        const payload = {
-          kids: state.kids,
-          meds: state.meds,
-          logs: state.logs.slice(0, 35),
-          updatedAt: state.updatedAt
-        };
-        await fetch(`https://ntfy.sh/${getTopicoNuvem()}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
-          body: JSON.stringify(payload)
-        });
-        document.getElementById('syncStatusText').textContent = '☁️ Sincronizado na nuvem';
-      } catch (e) {}
-    }
-
-    async function sincronizarNuvem(mostrarAviso = false) {
-      if (!navigator.onLine) {
-        if (mostrarAviso) mostrarToast('⚠️ Sem conexão no momento');
-        return;
-      }
-      try {
-        const res = await fetch(`https://ntfy.sh/${getTopicoNuvem()}/json?poll=1&since=72h`);
-        const text = await res.text();
-        const linhas = text.trim().split('\n').filter(Boolean);
-
-        let msgsValidas = [];
-        for (const l of linhas) {
-          try {
-            const ev = JSON.parse(l);
-            if (ev.event === 'message' && ev.message) {
-              msgsValidas.push(JSON.parse(ev.message));
-            }
-          } catch (e) {}
-        }
-
-        if (msgsValidas.length > 0) {
-          const remoto = msgsValidas[msgsValidas.length - 1];
-
-          // Atualiza filhos e remédios se o remoto for mais novo ou se o aparelho estava zerado
-          if ((remoto.updatedAt || 0) >= (state.updatedAt || 0) || state.logs.length === 0) {
-            if (remoto.kids && remoto.kids.length) state.kids = remoto.kids;
-            if (remoto.meds && remoto.meds.length) state.meds = remoto.meds;
-            state.updatedAt = remoto.updatedAt || Date.now();
-          }
-
-          // Mescla todos os históricos para nunca perder nenhum registro de febre
-          if (remoto.logs && Array.isArray(remoto.logs)) {
-            const mapaLogs = new Map();
-            [...state.logs, ...remoto.logs].forEach(item => {
-              const chave = `${item.kidNome}_${item.hora}_${item.temp}_${item.medNome}`;
-              if (!mapaLogs.has(chave)) mapaLogs.set(chave, item);
-            });
-            state.logs = Array.from(mapaLogs.values()).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-          }
-
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-          renderizarTudo();
-          document.getElementById('syncStatusText').textContent = '☁️ Sincronizado com sucesso';
-          if (mostrarAviso) mostrarToast('✅ Dados sincronizados com sucesso!');
-          return;
-        }
-        if (mostrarAviso) mostrarToast('👌 Tudo atualizado por aqui!');
-      } catch (e) {
-        if (mostrarAviso) mostrarToast('⚠️ Erro ao conectar na nuvem');
+        console.error('Erro ao sincronizar link:', e);
       }
     }
 
@@ -873,8 +806,8 @@
       }
 
       fecharModais();
-      salvarEstado(true);
-      mostrarToast('✅ Peso/Nome atualizado!');
+      salvarEstado();
+      mostrarToast('✅ Peso/Nome salvo!');
     }
 
     function excluirFilho() {
@@ -883,11 +816,10 @@
       state.kids = state.kids.filter(k => k.id !== id);
       state.kidAtivoId = state.kids[0].id;
       fecharModais();
-      salvarEstado(true);
+      salvarEstado();
     }
 
     function abrirModalMed() {
-      document.getElementById('editMedId').value = '';
       document.getElementById('medNome').value = '';
       document.getElementById('medMg').value = '';
       document.getElementById('medMlBase').value = '1';
@@ -919,9 +851,8 @@
       }
     }
 
-    async function buscarBulaOnline() {
+    function buscarBulaOnline() {
       const nomeBusca = document.getElementById('medNome').value.trim().toLowerCase();
-      const mgFrasco = parseFloat(document.getElementById('medMg').value);
       const box = document.getElementById('bulaResultadoBox');
 
       if (!nomeBusca) {
@@ -930,8 +861,6 @@
       }
 
       box.style.display = 'block';
-      box.innerHTML = '⏳ Consultando bula...';
-
       const encontrado = BASE_BULAS_BR.find(b => b.termos.some(t => nomeBusca.includes(t)));
       if (encontrado) {
         document.getElementById('medMgPorKg').value = encontrado.mgPorKg;
@@ -945,30 +874,7 @@
         return;
       }
 
-      if (state.geminiKey && navigator.onLine) {
-        try {
-          const prompt = `Você é um farmacêutico pediátrico brasileiro. Medicamento "${nomeBusca}" concentração "${mgFrasco || 'padrão'} mg por ${document.getElementById('medMlBase').value} mL". Responda APENAS um JSON válido: {"mgPorKg": numero_dose_unica_mg_por_kg, "intervalo": horas_inteiro, "maxDose": numero_maximo, "resumo": "explicacao curta"}`;
-          const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${state.geminiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-          });
-          const data = await resp.json();
-          const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-          const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-          if (jsonMatch) {
-            const info = JSON.parse(jsonMatch[0]);
-            document.getElementById('medMgPorKg').value = info.mgPorKg;
-            document.getElementById('medIntervalo').value = String(info.intervalo || 8);
-            document.getElementById('medMaxDose').value = info.maxDose || 40;
-            recalcularConversaoBula();
-            box.innerHTML = `✅ <strong>Bula Online (IA):</strong> ${info.resumo}`;
-            return;
-          }
-        } catch (err) {}
-      }
-
-      box.innerHTML = `ℹ️ <a href="https://www.google.com/search?q=bula+posologia+pediatrica+mg+kg+${encodeURIComponent(nomeBusca)}" target="_blank" style="color:#15803d;font-weight:700;">Toque para abrir a Bula no Google</a> e preencha o campo "Dose da Bula (mg por kg)" abaixo.`;
+      box.innerHTML = `ℹ️ <a href="https://www.google.com/search?q=bula+posologia+pediatrica+mg+kg+${encodeURIComponent(nomeBusca)}" target="_blank" style="color:#15803d;font-weight:700;">Toque aqui para ver a Bula no Google</a> e digite quantos <strong>mg por kg</strong> ela pede no campo abaixo.`;
     }
 
     function salvarMedicamento() {
@@ -988,18 +894,18 @@
 
       state.meds.push({
         id: 'med_' + Date.now(),
-        nome: mg ? `${nome} (${mg}mg/${mlBase > 1 ? mlBase + 'mL' : 'mL'})` : nome,
+        nome: mg ? `${nome} ${mg}mg` : nome,
         mg, mlBase, unidade, intervalo, mgPorKg, fatorPorKg, maxDose
       });
 
       fecharModais();
-      salvarEstado(true);
+      salvarEstado();
       mostrarToast('💊 Medicamento salvo!');
     }
 
     function removerMed(id) {
       state.meds = state.meds.filter(m => m.id !== id);
-      salvarEstado(true);
+      salvarEstado();
     }
 
     function calcularDoseParaFilho(med, peso) {
@@ -1013,8 +919,8 @@
 
     function getStatusHorarioMed(med, kid) {
       const ultimoLog = state.logs.find(l =>
-        (l.kidId === kid.id || l.kidNome.toLowerCase() === kid.nome.toLowerCase()) &&
-        (l.medId === med.id || l.medNome.toLowerCase() === med.nome.toLowerCase())
+        toToken(l.kidNome).toLowerCase() === toToken(kid.nome).toLowerCase() &&
+        toToken(l.medNome).toLowerCase() === toToken(med.nome).toLowerCase()
       );
       if (!ultimoLog) return { liberado: true, texto: '🟢 Liberado para uso' };
 
@@ -1093,12 +999,14 @@
         medId: med ? med.id : '',
         medNome: med ? med.nome : '',
         intervalo: med ? med.intervalo : 0,
+        fatorPorKg: med ? med.fatorPorKg : 1,
+        unidade: med ? med.unidade : 'gotas',
         dose,
         obs
       };
 
       state.logs.unshift(novoLog);
-      salvarEstado(true);
+      salvarEstado();
 
       document.getElementById('regTemp').value = '';
       document.getElementById('regObs').value = '';
@@ -1117,7 +1025,7 @@
       enviarLogWhatsApp(reg);
     }
 
-    // GERA LINK CURTO E LIMPO QUE NUNCA QUEBRA NO WHATSAPP
+    // 3. GERA LINK CURTO, 100% VERDE E SEM NENHUM CARACTERE QUE QUEBRE NO WHATSAPP
     function enviarLogWhatsApp(reg) {
       let proxTexto = 'Sem medicação (apenas aferição)';
       if (reg.medNome && reg.intervalo) {
@@ -1126,25 +1034,30 @@
         proxTexto = `*${horaProx}* (intervalo de ${reg.intervalo}h)`;
       }
 
-      const params = new URLSearchParams();
-      params.set('s', '1');
-      params.set('c', state.syncCode);
-      params.set('kn', reg.kidNome);
-      params.set('kw', reg.kidPeso);
-      params.set('p', reg.parent);
-      params.set('h', reg.hora);
-      params.set('dt', reg.dataStr);
-      params.set('ts', reg.timestamp);
-      if (reg.temp) params.set('t', reg.temp);
-      if (reg.medNome) {
-        params.set('mn', reg.medNome);
-        params.set('mi', reg.intervalo || 6);
-      }
-      if (reg.dose) params.set('d', reg.dose);
-      if (reg.obs) params.set('o', reg.obs);
-
+      // Empacota todos os filhos e pesos de forma ultracurta (ex: Zion-18_Tito-10)
+      const kidsToken = state.kids.map(k => `${toToken(k.nome)}-${k.peso}`).join('_');
       const baseUrl = window.location.origin + window.location.pathname;
-      const linkCurto = `${baseUrl}?${params.toString()}`;
+
+      const partesUrl = [
+        `s=4`,
+        `k=${kidsToken}`,
+        `c=${toToken(reg.kidNome)}`,
+        `w=${reg.kidPeso}`,
+        `p=${toToken(reg.parent)}`,
+        `h=${reg.hora.replace(':', '-')}`,
+        `dt=${(reg.dataStr || '').replace('/', '-')}`,
+        `t=${reg.temp || '0'}`,
+        `m=${toToken(reg.medNome || 'Nenhum')}`,
+        `i=${reg.intervalo || 0}`,
+        `f=${reg.fatorPorKg || 1}`,
+        `u=${toToken(reg.unidade || 'gotas')}`,
+        `d=${toToken(reg.dose || '0')}`,
+        `ts=${Math.floor(reg.timestamp / 1000)}`
+      ];
+
+      if (reg.obs) partesUrl.push(`o=${toToken(reg.obs)}`);
+
+      const linkInquebravel = `${baseUrl}?${partesUrl.join('&')}`;
 
       const linhas = [
         `🌡️ *Atualização: ${reg.kidNome}* (${reg.kidPeso} kg)`,
@@ -1155,8 +1068,8 @@
         reg.obs ? `📝 Obs: _${reg.obs}_` : null,
         `⏰ Próxima dose liberada às: ${proxTexto}`,
         ``,
-        `📲 *Toque no link para abrir já sincronizado:*`,
-        linkCurto
+        `📲 *Toque no link curto abaixo para sincronizar:*`,
+        linkInquebravel
       ].filter(Boolean).join('\n');
 
       const urlWhats = `https://wa.me/?text=${encodeURIComponent(linhas)}`;
@@ -1166,7 +1079,6 @@
     function renderizarTudo() {
       document.getElementById('btnPai').classList.toggle('active', state.parentAtivo === 'Wilson');
       document.getElementById('btnMae').classList.toggle('active', state.parentAtivo === 'Rayssa');
-      document.getElementById('labelCodigoCasal').textContent = state.syncCode;
 
       const kidAtivo = getFilhoAtivo();
       document.getElementById('nomeFilhoAtivo').textContent = kidAtivo.nome;
@@ -1222,7 +1134,7 @@
       selectMed.value = selecaoAnterior;
 
       const logsFilho = state.logs.filter(l =>
-        l.kidId === kidAtivo.id || l.kidNome.toLowerCase() === kidAtivo.nome.toLowerCase()
+        toToken(l.kidNome).toLowerCase() === toToken(kidAtivo.nome).toLowerCase()
       );
 
       if (logsFilho.length === 0) {
@@ -1253,23 +1165,9 @@
 
     function limparHistoricoFilho() {
       const kid = getFilhoAtivo();
-      state.logs = state.logs.filter(l => l.kidId !== kid.id && l.kidNome !== kid.nome);
-      salvarEstado(true);
+      state.logs = state.logs.filter(l => toToken(l.kidNome).toLowerCase() !== toToken(kid.nome).toLowerCase());
+      salvarEstado();
       mostrarToast('🗑️ Histórico limpo');
-    }
-
-    function abrirModalConfig() {
-      document.getElementById('cfgSyncCode').value = state.syncCode || '';
-      document.getElementById('cfgGeminiKey').value = state.geminiKey || '';
-      document.getElementById('modalConfig').classList.add('active');
-    }
-
-    function salvarConfig() {
-      state.syncCode = document.getElementById('cfgSyncCode').value.trim() || 'meninos-wr-2026';
-      state.geminiKey = document.getElementById('cfgGeminiKey').value.trim();
-      fecharModais();
-      salvarEstado(true);
-      sincronizarNuvem(true);
     }
 
     function fecharModais() {
@@ -1291,17 +1189,10 @@
       toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
     }
 
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(() => {});
-      });
-    }
-
     // Inicialização
     document.getElementById('regHora').value = getHoraAtualStr();
-    checarLinkCurtoWhatsApp();
+    receberSincronizacaoPeloLink();
     renderizarTudo();
-    sincronizarNuvem(false);
     setInterval(renderizarTudo, 30000);
   </script>
 </body>
