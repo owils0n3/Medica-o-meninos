@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>SOS Febre & Medicação</title>
+
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="SOS Febre" />
+  <meta name="theme-color" content="#0f172a" />
+
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --primary: #2563eb;
+      --primary-light: #eff6ff;
+      --success: #16a34a;
+      --success-bg: #dcfce7;
+      --warning: #d97706;
+      --warning-bg: #fef3c7;
+      --danger: #dc2626;
+      --danger-bg: #fee2e2;
+      --border: #e2e8f0;
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      padding-bottom: 70px;
+    }
+
+    header {
+      background: #0f172a;
+      color: #fff;
+      padding: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    }
+
+    .header-content {
+      max-width: 680px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-title h1 {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .header-title small {
+      color: #94a3b8;
+      font-size: 0.75rem;
+      display: block;
+    }
+
+    .parent-toggle {
+      display: flex;
+      background: #1e293b;
+      border-radius: 99px;
+      padding: 3px;
+      border: 1px solid #334155;
+    }
+
+    .parent-btn {
+      background: transparent;
+      color: #cbd5e1;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .parent-btn.active {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .container {
+      max-width: 680px;
+      margin: 14px auto;
+      padding: 0 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Abas dos Filhos */
+    .kids-bar {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .kid-tab {
+      flex: 1;
+      min-width: 135px;
+      background: #f8fafc;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.15s;
+    }
+
+    .kid-tab.active {
+      background: var(--primary-light);
+      border-color: var(--primary);
+    }
+
+    .kid-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .kid-weight {
+      font-size: 0.8rem;
+      color: var(--primary);
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .kid-edit-btn {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 5px 8px;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    /* Formulários */
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 5px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 11px 12px;
+      font-size: 0.95rem;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      color: var(--text);
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    @media (max-width: 480px) {
+      .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: opacity 0.15s;
+    }
+
+    .btn:active { opacity: 0.8; }
+    .btn-sm { padding: 8px 12px; font-size: 0.8rem; width: auto; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-whatsapp { background: #15803d; color: #fff; }
+    .btn-outline { background: #fff; color: var(--text); border: 1.5px solid var(--border); }
+    .btn-danger { background: var(--danger-bg); color: var(--danger); }
+
+    /* Cards de Medicamentos e Doses Calculadas */
+    .med-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .med-card {
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .med-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .med-title {
+      font-weight: 700;
+      font-size: 0.98rem;
+      color: #0f172a;
+    }
+
+    .med-sub {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .dose-highlight {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1d4ed8;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .timer-badge {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 99px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .timer-ok { background: var(--success-bg); color: var(--success); }
+    .timer-wait { background: var(--warning-bg); color: var(--warning); }
+
+    /* Linha do Tempo de Febre/Doses */
+    .log-item {
+      border-left: 3px solid var(--primary);
+      background: #f8fafc;
+      padding: 10px 12px;
+      border-radius: 0 10px 10px 0;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .log-item.high-fever {
+      border-left-color: var(--danger);
+      background: #fef2f2;
+    }
+
+    .log-info h4 {
+      font-size: 0.92rem;
+      margin-bottom: 3px;
+    }
+
+    .log-meta {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.65);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      z-index: 200;
+      overflow-y: auto;
+    }
+
+    .modal-backdrop.active { display: flex; }
+
+    .modal {
+      background: #fff;
+      border-radius: var(--radius);
+      max-width: 480px;
+      width: 100%;
+      padding: 18px;
+      max-height: 92vh;
+      overflow-y: auto;
+    }
+
+    .modal h3 { margin-bottom: 12px; font-size: 1.05rem; }
+    .form-group { margin-bottom: 12px; }
+
+    .bula-box {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 12px;
+      font-size: 0.8rem;
+      color: #166534;
+      line-height: 1.4;
+    }
+
+    .sync-bar {
+      background: #e0f2fe;
+      border: 1px solid #bae6fd;
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: #0369a1;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #0f172a;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 99px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      transition: transform 0.25s ease;
+      z-index: 300;
+      white-space: nowrap;
+    }
+
+    #toast.show { transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-content">
+      <div class="header-title">
+        <h1>🌡️ SOS Febre & Remédios</h1>
+        <small id="syncStatusText">Sincronizado no aparelho</small>
+      </div>
+      <div class="parent-toggle">
+        <button type="button" id="btnPai" class="parent-btn active" onclick="setParent('Wilson')">Wilson</button>
+        <button type="button" id="btnMae" class="parent-btn" onclick="setParent('Rayssa')">Rayssa</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- BARRA DE SINCRONIZAÇÃO CASAL -->
+    <div class="sync-bar">
+      <div>
+        <strong>🔗 Sincronização Casal:</strong> <span id="labelCodigoCasal">Ativa</span>
+      </div>
+      <div style="display:flex; gap:6px;">
+        <button class="btn btn-outline btn-sm" onclick="sincronizarNuvem(true)">🔄 Atualizar</button>
+        <button class="btn btn-outline btn-sm" onclick="abrirModalConfig()">⚙️ Config</button>
+      </div>
+    </div>
+
+    <!-- 1. SELETOR DE FILHOS (NOME E PESO PERSONALIZÁVEIS) -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">👦 Selecione o Filho</span>
+        <button class="btn btn-outline btn-sm" onclick="abrirModalFilho()">+ Novo Filho</button>
+      </div>
+      <div id="kidsContainer" class="kids-bar"></div>
+    </div>
+
+    <!-- 2. FARMACINHA & CALCULADORA AUTOMÁTICA PELA BULA -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">💊 Medicamentos & Dose p/ <span id="nomeFilhoAtivo">...</span></span>
+        <button class="btn btn-primary btn-sm" onclick="abrirModalMed()">+ Novo Remédio</button>
+      </div>
+      <p style="font-size:0.78rem; color:var(--muted); margin-bottom:10px;">
+        As doses abaixo são calculadas automaticamente para o peso atual (<strong id="pesoFilhoAtivo">0 kg</strong>) e controlam o horário liberado da próxima tomada.
+      </p>
+      <div id="medsContainer" class="med-list"></div>
+    </div>
+
+    <!-- 3. REGISTRAR FEBRE OU MEDICAÇÃO AGORA -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">📝 Registrar Febre / Dose Dada</span>
+      </div>
+      <form id="formRegistro">
+        <div class="grid-3 form-group">
+          <div>
+            <label>Horário</label>
+            <input type="time" id="regHora" required />
+          </div>
+          <div>
+            <label>Temperatura (°C)</label>
+            <input type="number" step="0.1" id="regTemp" placeholder="Ex: 38.2" />
+          </div>
+          <div>
+            <label>Medicamento Dado</label>
+            <select id="regMedId" onchange="preencherDoseSugerida()">
+              <option value="">Apenas medir temp.</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-2 form-group">
+          <div>
+            <label>Dose Administrada</label>
+            <input type="text" id="regDose" placeholder="Ex: 15 gotas ou 5 mL" />
+          </div>
+          <div>
+            <label>Observação rápida (opcional)</label>
+            <input type="text" id="regObs" placeholder="Ex: Banho morno, vomitou..." />
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top: 8px;">
+          <button type="submit" class="btn btn-primary">✅ Salvar Registro</button>
+          <button type="button" class="btn btn-whatsapp" onclick="salvarEEnviarWhats()">📲 Salvar e Avisar no Whats</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- 4. HISTÓRICO E LINHA DO TEMPO -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">🕒 Histórico de <span id="nomeFilhoHist">...</span></span>
+        <button class="btn btn-danger btn-sm" onclick="limparHistoricoFilho()">Limpar Histórico</button>
+      </div>
+      <div id="logsContainer"></div>
+    </div>
+
+  </div>
+
+  <!-- MODAL: CADASTRAR / EDITAR FILHO -->
+  <div id="modalFilho" class="modal-backdrop">
+    <div class="modal">
+      <h3 id="tituloModalFilho">Cadastrar Filho</h3>
+      <input type="hidden" id="editKidId" />
+      <div class="form-group">
+        <label>Nome do Filho *</label>
+        <input type="text" id="inputKidName" placeholder="Ex: Arthur" />
+      </div>
+      <div class="form-group">
+        <label>Peso Atual (kg) *</label>
+        <input type="number" step="0.1" id="inputKidWeight" placeholder="Ex: 15.5" />
+      </div>
+      <div style="display:flex; gap:8px; margin-top:14px;">
+        <button class="btn btn-outline" onclick="fecharModais()">Cancelar</button>
+        <button id="btnDeleteKid" class="btn btn-danger" style="display:none;" onclick="excluirFilho()">Excluir</button>
+        <button class="btn btn-primary" onclick="salvarFilho()">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CADASTRAR / BUSCAR BULA DE MEDICAMENTO -->
+  <div id="modalMed" class="modal-backdrop">
+    <div class="modal">
+      <h3>💊 Cadastrar ou Buscar Medicamento</h3>
+      <input type="hidden" id="editMedId" />
+
+      <div class="form-group">
+        <label>1. Nome do Remédio (ou Princípio Ativo) *</label>
+        <input type="text" id="medNome" placeholder="Ex: Ibuprofeno, Dipirona, Amoxicilina, Prelone..." />
+      </div>
+
+      <div class="grid-2 form-group">
+        <div>
+          <label>2. Quantos mg tem no frasco? *</label>
+          <input type="number" step="0.1" id="medMg" placeholder="Ex: 100 ou 250" oninput="recalcularConversaoBula()" />
+        </div>
+        <div>
+          <label>Em quantos mL? (Padrão: 1 mL)</label>
+          <select id="medMlBase" onchange="recalcularConversaoBula()">
+            <option value="1">por 1 mL (Gotas / Solução)</option>
+            <option value="5">por 5 mL (Suspensão / Xarope)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <button type="button" class="btn btn-success" onclick="buscarBulaOnline()">
+          🔍 Buscar Posologia na Bula Online
+        </button>
+      </div>
+
+      <div id="bulaResultadoBox" class="bula-box" style="display:none;"></div>
+
+      <div class="grid-2 form-group">
+        <div>
+          <label>Apresentação</label>
+          <select id="medUnidade" onchange="recalcularConversaoBula()">
+            <option value="gotas">Gotas (20 gotas = 1 mL)</option>
+            <option value="mL">mL (Seringa dosadora)</option>
+          </select>
+        </div>
+        <div>
+          <label>Intervalo entre Doses (Horas) *</label>
+          <select id="medIntervalo">
+            <option value="4">De 4 em 4 horas</option>
+            <option value="6" selected>De 6 em 6 horas</option>
+            <option value="8">De 8 em 8 horas</option>
+            <option value="12">De 12 em 12 horas</option>
+            <option value="24">1x ao dia (24h)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid-2 form-group">
+        <div>
+          <label>Dose da Bula (mg por kg)</label>
+          <input type="number" step="0.1" id="medMgPorKg" placeholder="Ex: 10" oninput="recalcularConversaoBula()" />
+        </div>
+        <div>
+          <label>Fator Final (<span id="lblFatorUnid">gotas/kg</span>) *</label>
+          <input type="number" step="0.01" id="medFatorPorKg" placeholder="Ex: 1.0" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Dose Máxima por tomada (Segurança)</label>
+        <input type="number" step="1" id="medMaxDose" placeholder="Ex: 40 (gotas ou mL)" />
+      </div>
+
+      <div style="display:flex; gap:8px; margin-top:14px;">
+        <button class="btn btn-outline" onclick="fecharModais()">Cancelar</button>
+        <button class="btn btn-primary" onclick="salvarMedicamento()">Salvar na Farmacinha</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CONFIGURAÇÃO DE SINCRONIZAÇÃO E IA -->
+  <div id="modalConfig" class="modal-backdrop">
+    <div class="modal">
+      <h3>⚙️ Sincronização (Wilson & Rayssa) + Bula IA</h3>
+      <div class="form-group">
+        <label>Código Único da Família (Para sincronizar os 2 celulares)</label>
+        <input type="text" id="cfgSyncCode" placeholder="Ex: meninos-wilson-rayssa" />
+        <small style="color:var(--muted); font-size:0.75rem; display:block; margin-top:4px;">
+          Coloque o mesmo código no seu celular e no da Rayssa. Os dados sincronizam na nuvem e também via link do WhatsApp.
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label>Chave Gemini AI (Opcional - para buscar remédios raros na web)</label>
+        <input type="password" id="cfgGeminiKey" placeholder="AIzaSy..." />
+        <small style="color:var(--muted); font-size:0.75rem; display:block; margin-top:4px;">
+          O app já conhece +35 remédios pediátricos nativamente. Se quiser que a IA leia bulas inéditas na internet, cole uma chave gratuita do Google AI Studio.
+        </small>
+      </div>
+
+      <div style="display:flex; gap:8px; margin-top:14px;">
+        <button class="btn btn-outline" onclick="fecharModais()">Fechar</button>
+        <button class="btn btn-primary" onclick="salvarConfig()">Salvar e Sincronizar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast">Salvo!</div>
+
+  <script>
+    const STORAGE_KEY = 'sos_febre_familia_v2';
+
+    // Base Farmacológica Pediátrica Brasileira Integrada (mg/kg/dose padrão das bulas ANVISA)
+    const BASE_BULAS_BR = [
+      { termos: ['dipirona', 'novalgina', 'maxalgina'], mgPorKg: 20, intervalo: 6, maxGotas: 40, nota: 'Bula Dipirona: 15 a 25 mg/kg/dose (aprox. 1 gota/kg na apresentação 500mg/mL) a cada 6h.' },
+      { termos: ['paracetamol', 'tylenol'], mgPorKg: 13, intervalo: 6, maxGotas: 35, nota: 'Bula Paracetamol: 10 a 15 mg/kg/dose (aprox. 1 gota/kg na apresentação 200mg/mL) a cada 6h.' },
+      { termos: ['ibuprofeno', 'alivium', 'buscofem', 'dalsy'], mgPorKg: 10, intervalo: 8, maxGotas: 40, nota: 'Bula Ibuprofeno: 5 a 10 mg/kg/dose a cada 6h a 8h (1 gota/kg na versão 100mg/mL ou 2 gotas/kg na 50mg/mL).' },
+      { termos: ['amoxicilina', 'amoxil', 'clavulin', 'novamox'], mgPorKg: 16.6, intervalo: 8, maxGotas: 15, nota: 'Bula Amoxicilina: dose padrão 50 mg/kg/dia dividida de 8 em 8 horas (~16,6 mg/kg por tomada).' },
+      { termos: ['azitromicina', 'astro', 'zitromax'], mgPorKg: 10, intervalo: 24, maxGotas: 12, nota: 'Bula Azitromicina: 10 mg/kg uma vez ao dia (24/24h) durante 3 a 5 dias.' },
+      { termos: ['prednisolona', 'prelone', 'predsim'], mgPorKg: 1, intervalo: 24, maxGotas: 20, nota: 'Bula Prednisolona: 1 a 2 mg/kg/dia (geralmente 1 mg/kg por dose).' },
+      { termos: ['cefalexina', 'keflex'], mgPorKg: 12.5, intervalo: 6, maxGotas: 15, nota: 'Bula Cefalexina: 25 a 50 mg/kg/dia dividido de 6/6h (~12,5 mg/kg por tomada).' },
+      { termos: ['dexclorfeniramina', 'polaramine', 'histamin'], mgPorKg: 0.05, intervalo: 8, maxGotas: 10, nota: 'Bula Dexclorfeniramina: 0,15 mg/kg/dia dividido de 8/8h (~0,05 mg/kg por dose).' },
+      { termos: ['loratadina', 'claritin'], mgPorKg: 0.2, intervalo: 24, maxGotas: 10, nota: 'Bula Loratadina: Abaixo de 30kg: 5 mL (5mg) 1x ao dia. Acima de 30kg: 10 mL.' },
+      { termos: ['desloratadina', 'desalex', 'esalerg'], mgPorKg: 0.1, intervalo: 24, maxGotas: 10, nota: 'Bula Desloratadina (0,5mg/mL): 1 a 5 anos: 2,5 mL; 6 a 11 anos: 5 mL (1x ao dia).' },
+      { termos: ['bromoprida', 'digesan', 'plabel'], mgPorKg: 0.15, intervalo: 8, maxGotas: 30, nota: 'Bula Bromoprida gotas (4mg/mL): 1 gota por kg de peso de 8/8h.' },
+      { termos: ['ondansetrona', 'vonau', 'ansentron'], mgPorKg: 0.15, intervalo: 8, maxGotas: 8, nota: 'Bula Ondansetrona: 0,15 mg/kg por dose a cada 8 horas.' },
+      { termos: ['hidroxizina', 'hixizine'], mgPorKg: 0.7, intervalo: 8, maxGotas: 15, nota: 'Bula Hidroxizina: ~0,7 mg/kg por dose de 8 em 8 horas.' },
+      { termos: ['cetoprofeno', 'profids'], mgPorKg: 1, intervalo: 8, maxGotas: 50, nota: 'Bula Cetoprofeno gotas (20mg/mL): 1 gota por kg de 8 em 8 horas.' }
+    ];
+
+    // Estado Inicial Padrão
+    const defaultState = {
+      parentAtivo: 'Wilson',
+      syncCode: 'meninos-wr-2026',
+      geminiKey: '',
+      kidAtivoId: 'kid1',
+      updatedAt: Date.now(),
+      kids: [
+        { id: 'kid1', nome: 'Filho 1', peso: 16.0 },
+        { id: 'kid2', nome: 'Filho 2', peso: 12.5 }
+      ],
+      meds: [
+        { id: 'm1', nome: 'Dipirona Gotas', mg: 500, mlBase: 1, unidade: 'gotas', intervalo: 6, mgPorKg: 20, fatorPorKg: 0.8, maxDose: 40 },
+        { id: 'm2', nome: 'Ibuprofeno Gotas', mg: 100, mlBase: 1, unidade: 'gotas', intervalo: 8, mgPorKg: 10, fatorPorKg: 2.0, maxDose: 40 },
+        { id: 'm3', nome: 'Paracetamol Gotas', mg: 200, mlBase: 1, unidade: 'gotas', intervalo: 6, mgPorKg: 13, fatorPorKg: 1.3, maxDose: 35 }
+      ],
+      logs: []
+    };
+
+    let state = carregarEstadoLocal();
+
+    function carregarEstadoLocal() {
+      const salvo = localStorage.getItem(STORAGE_KEY);
+      if (salvo) {
+        try { return { ...defaultState, ...JSON.parse(salvo) }; } catch (e) {}
+      }
+      return defaultState;
+    }
+
+    function salvarEstado(enviarNuvem = true) {
+      state.updatedAt = Date.now();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      renderizarTudo();
+      if (enviarNuvem) publicarNaNuvem();
+    }
+
+    // 1. Verificar se abriu via Link Mágico do WhatsApp (?sync=...)
+    function checarLinkMagicoWhatsApp() {
+      const params = new URLSearchParams(window.location.search);
+      const syncData = params.get('sync');
+      if (syncData) {
+        try {
+          const decoded = JSON.parse(decodeURIComponent(escape(atob(syncData))));
+          if (decoded && decoded.kids && decoded.meds) {
+            state = { ...state, ...decoded, parentAtivo: state.parentAtivo };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            window.history.replaceState({}, document.title, window.location.pathname);
+            mostrarToast('✅ Dados atualizados pelo link do WhatsApp!');
+          }
+        } catch (err) {
+          console.error('Erro ao ler link de sync', err);
+        }
+      }
+    }
+
+    // 2. Sincronização em Nuvem Gratuita (ntfy.sh JSON pub/sub)
+    async function publicarNaNuvem() {
+      if (!state.syncCode || !navigator.onLine) return;
+      const topico = 'sos_febre_' + state.syncCode.toLowerCase().replace(/[^a-z0-9_-]/g, '');
+      try {
+        const payload = {
+          kids: state.kids,
+          meds: state.meds,
+          logs: state.logs.slice(0, 40),
+          updatedAt: state.updatedAt
+        };
+        await fetch(`https://ntfy.sh/${topico}`, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+        document.getElementById('syncStatusText').textContent = '☁️ Sincronizado com Rayssa/Wilson';
+      } catch (e) {}
+    }
+
+    async function sincronizarNuvem(mostrarAviso = false) {
+      if (!state.syncCode || !navigator.onLine) {
+        if (mostrarAviso) mostrarToast('⚠️ Sem internet no momento');
+        return;
+      }
+      const topico = 'sos_febre_' + state.syncCode.toLowerCase().replace(/[^a-z0-9_-]/g, '');
+      try {
+        const res = await fetch(`https://ntfy.sh/${topico}/json?poll=1&since=24h`);
+        const text = await res.text();
+        const linhas = text.trim().split('\n').filter(Boolean);
+        if (linhas.length > 0) {
+          const ultimaMsg = JSON.parse(linhas[linhas.length - 1]);
+          const dadosRemotos = JSON.parse(ultimaMsg.message);
+          if (dadosRemotos && dadosRemotos.updatedAt > state.updatedAt) {
+            state.kids = dadosRemotos.kids;
+            state.meds = dadosRemotos.meds;
+            state.logs = dadosRemotos.logs;
+            state.updatedAt = dadosRemotos.updatedAt;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            renderizarTudo();
+            if (mostrarAviso) mostrarToast('✅ Atualizado com os últimos lançamentos!');
+            return;
+          }
+        }
+        if (mostrarAviso) mostrarToast('👌 Seu app já está com os dados mais recentes!');
+      } catch (e) {
+        if (mostrarAviso) mostrarToast('⚠️ Não foi possível consultar a nuvem agora');
+      }
+    }
+
+    // 3. Alternar Pai / Mãe
+    function setParent(nome) {
+      state.parentAtivo = nome;
+      document.getElementById('btnPai').classList.toggle('active', nome === 'Wilson');
+      document.getElementById('btnMae').classList.toggle('active', nome === 'Rayssa');
+      salvarEstado(false);
+    }
+
+    // 4. Gerenciar Filhos (Nome e Peso personalizáveis)
+    function selecionarFilho(id) {
+      state.kidAtivoId = id;
+      salvarEstado(false);
+    }
+
+    function getFilhoAtivo() {
+      return state.kids.find(k => k.id === state.kidAtivoId) || state.kids[0];
+    }
+
+    function abrirModalFilho(id = '') {
+      const modal = document.getElementById('modalFilho');
+      const btnDel = document.getElementById('btnDeleteKid');
+      if (id) {
+        const k = state.kids.find(x => x.id === id);
+        document.getElementById('tituloModalFilho').textContent = 'Editar Nome / Peso';
+        document.getElementById('editKidId').value = k.id;
+        document.getElementById('inputKidName').value = k.nome;
+        document.getElementById('inputKidWeight').value = k.peso;
+        btnDel.style.display = state.kids.length > 1 ? 'inline-flex' : 'none';
+      } else {
+        document.getElementById('tituloModalFilho').textContent = 'Adicionar Filho';
+        document.getElementById('editKidId').value = '';
+        document.getElementById('inputKidName').value = '';
+        document.getElementById('inputKidWeight').value = '';
+        btnDel.style.display = 'none';
+      }
+      modal.classList.add('active');
+    }
+
+    function salvarFilho() {
+      const id = document.getElementById('editKidId').value;
+      const nome = document.getElementById('inputKidName').value.trim();
+      const peso = parseFloat(document.getElementById('inputKidWeight').value);
+
+      if (!nome || isNaN(peso) || peso <= 0) {
+        mostrarToast('⚠️ Informe o nome e o peso válido');
+        return;
+      }
+
+      if (id) {
+        const idx = state.kids.findIndex(k => k.id === id);
+        if (idx > -1) {
+          state.kids[idx].nome = nome;
+          state.kids[idx].peso = peso;
+        }
+      } else {
+        const novoId = 'kid_' + Date.now();
+        state.kids.push({ id: novoId, nome, peso });
+        state.kidAtivoId = novoId;
+      }
+
+      fecharModais();
+      salvarEstado(true);
+      mostrarToast('✅ Dados do filho atualizados!');
+    }
+
+    function excluirFilho() {
+      const id = document.getElementById('editKidId').value;
+      if (state.kids.length <= 1) return;
+      state.kids = state.kids.filter(k => k.id !== id);
+      state.kidAtivoId = state.kids[0].id;
+      fecharModais();
+      salvarEstado(true);
+    }
+
+    // 5. Busca Online de Bula + Conversão Automática de mg para Gotas ou mL
+    function abrirModalMed() {
+      document.getElementById('editMedId').value = '';
+      document.getElementById('medNome').value = '';
+      document.getElementById('medMg').value = '';
+      document.getElementById('medMlBase').value = '1';
+      document.getElementById('medUnidade').value = 'gotas';
+      document.getElementById('medIntervalo').value = '6';
+      document.getElementById('medMgPorKg').value = '';
+      document.getElementById('medFatorPorKg').value = '';
+      document.getElementById('medMaxDose').value = '40';
+      document.getElementById('bulaResultadoBox').style.display = 'none';
+      document.getElementById('modalMed').classList.add('active');
+    }
+
+    // Converte (mg/kg da bula) + (mg/mL do frasco) => gotas/kg ou mL/kg
+    function recalcularConversaoBula() {
+      const mgFrasco = parseFloat(document.getElementById('medMg').value);
+      const mlBase = parseFloat(document.getElementById('medMlBase').value) || 1;
+      const mgPorKg = parseFloat(document.getElementById('medMgPorKg').value);
+      const unidade = document.getElementById('medUnidade').value;
+
+      document.getElementById('lblFatorUnid').textContent = unidade === 'gotas' ? 'gotas/kg' : 'mL/kg';
+
+      if (mgFrasco > 0 && mgPorKg > 0) {
+        const concentracaoPorMl = mgFrasco / mlBase; // quantos mg existem em 1 mL
+        const mlPorKg = mgPorKg / concentracaoPorMl;
+        if (unidade === 'gotas') {
+          const gotasPorKg = mlPorKg * 20; // Padrão farmacêutico: 1 mL = 20 gotas
+          document.getElementById('medFatorPorKg').value = gotasPorKg.toFixed(2);
+        } else {
+          document.getElementById('medFatorPorKg').value = mlPorKg.toFixed(2);
+        }
+      }
+    }
+
+    async function buscarBulaOnline() {
+      const nomeBusca = document.getElementById('medNome').value.trim().toLowerCase();
+      const mgFrasco = parseFloat(document.getElementById('medMg').value);
+      const box = document.getElementById('bulaResultadoBox');
+
+      if (!nomeBusca) {
+        mostrarToast('⚠️ Digite o nome do medicamento primeiro');
+        return;
+      }
+
+      box.style.display = 'block';
+      box.innerHTML = '⏳ Consultando referências da bula...';
+
+      // 1º: Verifica na Base Farmacológica Pediátrica integrada
+      const encontrado = BASE_BULAS_BR.find(b => b.termos.some(t => nomeBusca.includes(t)));
+      if (encontrado) {
+        document.getElementById('medMgPorKg').value = encontrado.mgPorKg;
+        document.getElementById('medIntervalo').value = String(encontrado.intervalo);
+        document.getElementById('medMaxDose').value = encontrado.maxGotas;
+
+        // Se for suspensão clássica (ex: 5mL), ajusta unidade para mL automaticamente
+        if (document.getElementById('medMlBase').value === '5') {
+          document.getElementById('medUnidade').value = 'mL';
+        }
+
+        recalcularConversaoBula();
+        box.innerHTML = `✅ <strong>Bula Localizada:</strong> ${encontrado.nota}<br/>` +
+          (mgFrasco ? `Cálculo ajustado automaticamente para a sua concentração de <strong>${mgFrasco} mg</strong>.` : `💡 <em>Digite quantos mg tem no seu frasco acima para converter a dose exata!</em>`);
+        return;
+      }
+
+      // 2º: Se for um remédio novo/raro e o usuário tiver configurado a chave Gemini AI
+      if (state.geminiKey && navigator.onLine) {
+        try {
+          const prompt = `Você é um farmacêutico pediátrico brasileiro. O usuário tem o medicamento "${nomeBusca}" na concentração "${mgFrasco || 'padrão'} mg por ${document.getElementById('medMlBase').value} mL". Responda APENAS um JSON válido com as chaves: {"mgPorKg": numero_dose_unica_mg_por_kg, "intervalo": horas_inteiro_6_8_12_ou_24, "maxDose": numero_maximo, "resumo": "explicacao curta da bula ANVISA"}`;
+          const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${state.geminiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+          });
+          const data = await resp.json();
+          const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+          const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            const info = JSON.parse(jsonMatch[0]);
+            document.getElementById('medMgPorKg').value = info.mgPorKg;
+            document.getElementById('medIntervalo').value = String(info.intervalo || 8);
+            document.getElementById('medMaxDose').value = info.maxDose || 40;
+            recalcularConversaoBula();
+            box.innerHTML = `✅ <strong>Bula Online (IA):</strong> ${info.resumo}`;
+            return;
+          }
+        } catch (err) {}
+      }
+
+      // 3º: Fallback com atalho direto para a bula oficial no navegador + calculadora pronta
+      box.innerHTML = `ℹ️ Medicamento específico. <a href="https://www.google.com/search?q=bula+posologia+pediatrica+mg+kg+${encodeURIComponent(nomeBusca)}" target="_blank" style="color:#15803d;font-weight:700;">Toque aqui para abrir a Bula no Google</a>, veja quantos <strong>mg/kg</strong> ela pede e digite no campo "Dose da Bula (mg por kg)" abaixo que o app converte sozinho!`;
+    }
+
+    function salvarMedicamento() {
+      const nome = document.getElementById('medNome').value.trim();
+      const mg = parseFloat(document.getElementById('medMg').value) || 0;
+      const mlBase = parseFloat(document.getElementById('medMlBase').value) || 1;
+      const unidade = document.getElementById('medUnidade').value;
+      const intervalo = parseInt(document.getElementById('medIntervalo').value, 10) || 6;
+      const mgPorKg = parseFloat(document.getElementById('medMgPorKg').value) || 0;
+      const fatorPorKg = parseFloat(document.getElementById('medFatorPorKg').value);
+      const maxDose = parseFloat(document.getElementById('medMaxDose').value) || 99;
+
+      if (!nome || isNaN(fatorPorKg) || fatorPorKg <= 0) {
+        mostrarToast('⚠️ Preencha o nome, os mg e clique em Buscar Bula');
+        return;
+      }
+
+      state.meds.push({
+        id: 'med_' + Date.now(),
+        nome: mg ? `${nome} (${mg}mg/${mlBase > 1 ? mlBase + 'mL' : 'mL'})` : nome,
+        mg, mlBase, unidade, intervalo, mgPorKg, fatorPorKg, maxDose
+      });
+
+      fecharModais();
+      salvarEstado(true);
+      mostrarToast('💊 Medicamento salvo na farmacinha!');
+    }
+
+    function removerMed(id) {
+      state.meds = state.meds.filter(m => m.id !== id);
+      salvarEstado(true);
+    }
+
+    // Calcula a dose exata para o filho ativo
+    function calcularDoseParaFilho(med, peso) {
+      let bruta = peso * med.fatorPorKg;
+      if (med.maxDose && bruta > med.maxDose) bruta = med.maxDose;
+      const valorFormatado = med.unidade === 'gotas'
+        ? Math.round(bruta)
+        : (Math.round(bruta * 2) / 2).toFixed(1).replace('.0', '');
+      return `${valorFormatado} ${med.unidade}`;
+    }
+
+    // Verifica se o medicamento está liberado ou em espera para o filho selecionado
+    function getStatusHorarioMed(med, kidId) {
+      const ultimoLog = state.logs.find(l => l.kidId === kidId && l.medId === med.id);
+      if (!ultimoLog) return { liberado: true, texto: '🟢 Liberado para uso' };
+
+      const proxTimestamp = ultimoLog.timestamp + (med.intervalo * 3600 * 1000);
+      const agora = Date.now();
+      const proxData = new Date(proxTimestamp);
+      const horaLiberada = proxData.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+      if (agora >= proxTimestamp) {
+        return { liberado: true, texto: `🟢 Liberado (Última às ${ultimoLog.hora})` };
+      } else {
+        const diffMin = Math.ceil((proxTimestamp - agora) / 60000);
+        const h = Math.floor(diffMin / 60);
+        const m = diffMin % 60;
+        return {
+          liberado: false,
+          horaLiberada,
+          texto: `⏳ Liberado às ${horaLiberada} (faltam ${h}h ${m}m)`
+        };
+      }
+    }
+
+    // 6. Registrar Dose / Febre e Enviar no WhatsApp
+    function getHoraAtualStr() {
+      const d = new Date();
+      return d.toTimeString().slice(0, 5);
+    }
+
+    function preencherDoseSugerida() {
+      const medId = document.getElementById('regMedId').value;
+      const kid = getFilhoAtivo();
+      if (!medId || !kid) {
+        document.getElementById('regDose').value = '';
+        return;
+      }
+      const med = state.meds.find(m => m.id === medId);
+      if (med) {
+        document.getElementById('regDose').value = calcularDoseParaFilho(med, kid.peso);
+      }
+    }
+
+    function usarMedRapido(medId) {
+      document.getElementById('regHora').value = getHoraAtualStr();
+      document.getElementById('regMedId').value = medId;
+      preencherDoseSugerida();
+      document.getElementById('regTemp').focus();
+      mostrarToast('👇 Confira a hora/temperatura e clique em Salvar');
+    }
+
+    function criarRegistroInterno() {
+      const kid = getFilhoAtivo();
+      const hora = document.getElementById('regHora').value || getHoraAtualStr();
+      const temp = document.getElementById('regTemp').value;
+      const medId = document.getElementById('regMedId').value;
+      const dose = document.getElementById('regDose').value.trim();
+      const obs = document.getElementById('regObs').value.trim();
+
+      if (!temp && !medId) {
+        mostrarToast('⚠️ Informe a temperatura ou o medicamento dado');
+        return null;
+      }
+
+      const med = state.meds.find(m => m.id === medId);
+
+      // Calcula timestamp real com base na hora informada
+      const agora = new Date();
+      const [hh, mm] = hora.split(':').map(Number);
+      const dataReg = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), hh, mm, 0);
+
+      const novoLog = {
+        id: 'log_' + Date.now(),
+        kidId: kid.id,
+        kidNome: kid.nome,
+        kidPeso: kid.peso,
+        parent: state.parentAtivo,
+        hora,
+        dataStr: agora.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+        timestamp: dataReg.getTime(),
+        temp: temp ? parseFloat(temp).toFixed(1) : '',
+        medId: med ? med.id : '',
+        medNome: med ? med.nome : '',
+        intervalo: med ? med.intervalo : 0,
+        dose,
+        obs
+      };
+
+      state.logs.unshift(novoLog);
+      salvarEstado(true);
+
+      document.getElementById('regTemp').value = '';
+      document.getElementById('regObs').value = '';
+      return novoLog;
+    }
+
+    document.getElementById('formRegistro').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const reg = criarRegistroInterno();
+      if (reg) mostrarToast('✅ Registro salvo!');
+    });
+
+    function salvarEEnviarWhats() {
+      const reg = criarRegistroInterno();
+      if (!reg) return;
+      enviarLogWhatsApp(reg);
+    }
+
+    function enviarLogWhatsApp(reg) {
+      let proxTexto = 'Sem medicação (apenas aferição)';
+      if (reg.medId && reg.intervalo) {
+        const proxData = new Date(reg.timestamp + reg.intervalo * 3600 * 1000);
+        const horaProx = proxData.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        proxTexto = `*${horaProx}* (intervalo de ${reg.intervalo}h)`;
+      }
+
+      // Gera Link Mágico com o estado compacto para sincronizar o celular do outro ao clicar
+      const stateToShare = {
+        kids: state.kids,
+        meds: state.meds,
+        logs: state.logs.slice(0, 15),
+        updatedAt: state.updatedAt
+      };
+      const base64 = btoa(unescape(encodeURIComponent(JSON.stringify(stateToShare))));
+      const baseUrl = window.location.origin + window.location.pathname;
+      const linkMagico = `${baseUrl}?sync=${base64}`;
+
+      const linhas = [
+        `🌡️ *Atualização: ${reg.kidNome}* (${reg.kidPeso} kg)`,
+        `👤 Registrado por: *${reg.parent}* às *${reg.hora}*`,
+        reg.temp ? `🌡️ Temperatura: *${reg.temp}°C*` : null,
+        reg.medNome ? `💊 Medicação: *${reg.medNome}*` : null,
+        reg.dose ? `💧 Dose dada: *${reg.dose}*` : null,
+        reg.obs ? `📝 Obs: _${reg.obs}_` : null,
+        `⏰ Próxima dose liberada às: ${proxTexto}`,
+        ``,
+        `📲 *Toque abaixo para abrir e sincronizar no seu celular:*`,
+        linkMagico
+      ].filter(Boolean).join('\n');
+
+      const urlWhats = `https://wa.me/?text=${encodeURIComponent(linhas)}`;
+      window.open(urlWhats, '_blank');
+    }
+
+    // 7. Renderização Geral da Interface
+    function renderizarTudo() {
+      document.getElementById('btnPai').classList.toggle('active', state.parentAtivo === 'Wilson');
+      document.getElementById('btnMae').classList.toggle('active', state.parentAtivo === 'Rayssa');
+      document.getElementById('labelCodigoCasal').textContent = state.syncCode;
+
+      const kidAtivo = getFilhoAtivo();
+      document.getElementById('nomeFilhoAtivo').textContent = kidAtivo.nome;
+      document.getElementById('pesoFilhoAtivo').textContent = `${kidAtivo.peso} kg`;
+      document.getElementById('nomeFilhoHist').textContent = kidAtivo.nome;
+
+      // Renderizar Abas dos Filhos
+      const kidsHtml = state.kids.map(k => `
+        <div class="kid-tab ${k.id === kidAtivo.id ? 'active' : ''}" onclick="selecionarFilho('${k.id}')">
+          <div>
+            <div class="kid-name">${escapeHTML(k.nome)}</div>
+            <div class="kid-weight">⚖️ ${k.peso} kg</div>
+          </div>
+          <button class="kid-edit-btn" onclick="event.stopPropagation(); abrirModalFilho('${k.id}')">✏️ Peso</button>
+        </div>
+      `).join('');
+      document.getElementById('kidsContainer').innerHTML = kidsHtml;
+
+      // Renderizar Farmacinha e Select de Registro
+      const selectMed = document.getElementById('regMedId');
+      const selecaoAnterior = selectMed.value;
+      selectMed.innerHTML = '<option value="">Apenas medir temp.</option>';
+
+      const medsHtml = state.meds.map(m => {
+        const doseCalculada = calcularDoseParaFilho(m, kidAtivo.peso);
+        const status = getStatusHorarioMed(m, kidAtivo.id);
+
+        const opt = document.createElement('option');
+        opt.value = m.id;
+        opt.textContent = `${m.nome} (${doseCalculada})`;
+        selectMed.appendChild(opt);
+
+        return `
+          <div class="med-card">
+            <div class="med-top">
+              <div>
+                <div class="med-title">${escapeHTML(m.nome)}</div>
+                <div class="med-sub">Intervalo: de ${m.intervalo} em ${m.intervalo}h</div>
+              </div>
+              <button class="kid-edit-btn" onclick="removerMed('${m.id}')" title="Remover">✕</button>
+            </div>
+            <div class="dose-highlight">
+              <span>Dose p/ ${kidAtivo.peso} kg: <strong>${doseCalculada}</strong></span>
+              <button class="btn btn-primary btn-sm" onclick="usarMedRapido('${m.id}')">Dar Agora</button>
+            </div>
+            <div>
+              <span class="timer-badge ${status.liberado ? 'timer-ok' : 'timer-wait'}">
+                ${status.texto}
+              </span>
+            </div>
+          </div>
+        `;
+      }).join('');
+      document.getElementById('medsContainer').innerHTML = medsHtml;
+      selectMed.value = selecaoAnterior;
+
+      // Renderizar Histórico do Filho Ativo
+      const logsFilho = state.logs.filter(l => l.kidId === kidAtivo.id);
+      if (logsFilho.length === 0) {
+        document.getElementById('logsContainer').innerHTML = '<p style="text-align:center;color:var(--muted);font-size:0.85rem;padding:16px;">Nenhum registro para este filho ainda.</p>';
+      } else {
+        document.getElementById('logsContainer').innerHTML = logsFilho.map(l => {
+          const febreAlta = l.temp && parseFloat(l.temp) >= 37.8;
+          return `
+            <div class="log-item ${febreAlta ? 'high-fever' : ''}">
+              <div class="log-info">
+                <h4>
+                  ${l.hora} (${l.dataStr})
+                  ${l.temp ? `• 🌡️ ${l.temp}°C` : ''}
+                  ${l.medNome ? `• 💊 ${escapeHTML(l.medNome)}` : ''}
+                </h4>
+                <div class="log-meta">
+                  ${l.dose ? `<strong>Dose:</strong> ${escapeHTML(l.dose)} | ` : ''}
+                  <strong>Por:</strong> ${escapeHTML(l.parent)}
+                  ${l.obs ? `<br/><em>Obs: ${escapeHTML(l.obs)}</em>` : ''}
+                </div>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick='enviarLogWhatsApp(${JSON.stringify(l).replace(/'/g, "&#39;")})'>📲 Whats</button>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    function limparHistoricoFilho() {
+      const kid = getFilhoAtivo();
+      state.logs = state.logs.filter(l => l.kidId !== kid.id);
+      salvarEstado(true);
+      mostrarToast('🗑️ Histórico limpo');
+    }
+
+    function abrirModalConfig() {
+      document.getElementById('cfgSyncCode').value = state.syncCode || '';
+      document.getElementById('cfgGeminiKey').value = state.geminiKey || '';
+      document.getElementById('modalConfig').classList.add('active');
+    }
+
+    function salvarConfig() {
+      state.syncCode = document.getElementById('cfgSyncCode').value.trim() || 'meninos-wr-2026';
+      state.geminiKey = document.getElementById('cfgGeminiKey').value.trim();
+      fecharModais();
+      salvarEstado(true);
+      sincronizarNuvem(true);
+    }
+
+    function fecharModais() {
+      document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('active'));
+    }
+
+    function escapeHTML(str) {
+      return String(str || '').replace(/[&<>'"]/g, tag => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+      }[tag]));
+    }
+
+    let toastTimer;
+    function mostrarToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+
+    // Inicialização
+    document.getElementById('regHora').value = getHoraAtualStr();
+    checarLinkMagicoWhatsApp();
+    renderizarTudo();
+    sincronizarNuvem(false);
+    setInterval(renderizarTudo, 30000); // Atualiza os contadores de horário a cada 30s
+  </script>
+</body>
+</html>
