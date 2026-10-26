@@ -2,128 +2,191 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>SOS Febre & Medicação</title>
 
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="SOS Febre" />
-  <meta name="theme-color" content="#0f172a" />
+  <meta name="theme-color" content="#F2F2F7" />
 
   <style>
     :root {
-      --bg: #f1f5f9;
-      --card: #ffffff;
-      --text: #0f172a;
-      --muted: #64748b;
-      --primary: #2563eb;
-      --primary-light: #eff6ff;
-      --success: #16a34a;
-      --success-bg: #dcfce7;
-      --warning: #d97706;
-      --warning-bg: #fef3c7;
-      --danger: #dc2626;
-      --danger-bg: #fee2e2;
-      --border: #e2e8f0;
-      --radius: 16px;
+      --bg-primary: #F2F2F7;
+      --bg-elevated: #FFFFFF;
+      --bg-glass: rgba(242, 242, 247, 0.82);
+      --bg-segmented: #E5E5EA;
+      
+      --primary: #007AFF;
+      --primary-light: #F0F6FF;
+      --primary-dark: #0056B3;
+      
+      --success: #34C759;
+      --success-bg: #E8F5E9;
+      --warning: #FF9500;
+      --warning-bg: #FFF4E5;
+      --danger: #FF3B30;
+      --danger-bg: #FFF1F0;
+      
+      --text-primary: #1C1C1E;
+      --text-secondary: #636366;
+      --text-muted: #8E8E93;
+      
+      --border-hairline: rgba(60, 60, 67, 0.14);
+      --border-strong: #D1D1D6;
+
+      --radius-sm: 10px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
       -webkit-tap-highlight-color: transparent;
+      -webkit-font-smoothing: antialiased;
     }
 
     body {
-      background: var(--bg);
-      color: var(--text);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
       padding-bottom: 70px;
     }
 
     header {
-      background: #0f172a;
-      color: #fff;
-      padding: 16px;
       position: sticky;
       top: 0;
       z-index: 50;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+      background: var(--bg-glass);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 0.5px solid var(--border-hairline);
+      padding: 14px 20px 16px;
     }
 
-    .header-content {
-      max-width: 680px;
+    .app-shell {
+      max-width: 720px;
       margin: 0 auto;
+    }
+
+    .nav-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 10px;
+      margin-bottom: 12px;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
-    .header-title h1 {
-      font-size: 1.1rem;
+    .brand-title span {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+    }
+
+    .brand-title h1 {
+      font-size: 1.35rem;
       font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--text-primary);
     }
 
-    .header-title small {
-      color: #38bdf8;
-      font-size: 0.75rem;
-      display: block;
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .btn-ios {
+      height: 36px;
+      padding: 0 12px;
+      border-radius: 99px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: transform 0.12s ease, opacity 0.12s ease, background 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-ios:active {
+      transform: scale(0.96);
+      opacity: 0.85;
+    }
+
+    .btn-ios-primary {
+      background: var(--primary);
+      color: #FFFFFF;
+    }
+
+    .btn-ios-secondary {
+      background: var(--bg-segmented);
+      color: var(--text-primary);
     }
 
     .parent-toggle {
       display: flex;
-      background: #1e293b;
+      background: var(--bg-segmented);
       border-radius: 99px;
       padding: 3px;
-      border: 1px solid #334155;
     }
 
     .parent-btn {
       background: transparent;
-      color: #cbd5e1;
+      color: var(--text-secondary);
       border: none;
-      padding: 6px 12px;
+      padding: 5px 12px;
       border-radius: 99px;
       font-size: 0.78rem;
-      font-weight: 700;
+      font-weight: 600;
       cursor: pointer;
+      transition: all 0.2s ease;
     }
 
     .parent-btn.active {
-      background: var(--primary);
-      color: #fff;
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     }
 
     .container {
-      max-width: 680px;
-      margin: 14px auto;
-      padding: 0 12px;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 16px 20px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 16px;
     }
 
-    .card {
-      background: var(--card);
-      border-radius: var(--radius);
-      padding: 16px;
-      border: 1px solid var(--border);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    .ios-card {
+      background: var(--bg-elevated);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      border: 0.5px solid var(--border-hairline);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
     }
 
     .card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
 
     .card-title {
       font-size: 0.95rem;
       font-weight: 700;
-      color: #1e293b;
+      color: var(--text-primary);
       display: flex;
       align-items: center;
       gap: 6px;
@@ -131,22 +194,23 @@
 
     .kids-bar {
       display: flex;
-      gap: 8px;
+      gap: 10px;
       overflow-x: auto;
       padding-bottom: 4px;
     }
 
     .kid-tab {
       flex: 1;
-      min-width: 135px;
-      background: #f8fafc;
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      padding: 10px 12px;
+      min-width: 140px;
+      background: var(--bg-primary);
+      border: 1.5px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      padding: 12px;
       cursor: pointer;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      transition: all 0.2s ease;
     }
 
     .kid-tab.active {
@@ -157,46 +221,49 @@
     .kid-name {
       font-weight: 700;
       font-size: 0.95rem;
-      color: var(--text);
+      color: var(--text-primary);
     }
 
     .kid-weight {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--primary);
       font-weight: 700;
       margin-top: 2px;
     }
 
     .kid-edit-btn {
-      background: #fff;
-      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      border: 0.5px solid var(--border-strong);
       border-radius: 8px;
-      padding: 5px 8px;
+      padding: 6px 8px;
       font-size: 0.75rem;
       cursor: pointer;
+      color: var(--text-secondary);
     }
 
     label {
       display: block;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 600;
-      color: #334155;
-      margin-bottom: 5px;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
     }
 
     input, select {
       width: 100%;
-      padding: 11px 12px;
+      height: 42px;
+      padding: 0 12px;
       font-size: 0.95rem;
-      border: 1.5px solid var(--border);
+      border: 1px solid var(--border-strong);
       border-radius: 10px;
-      background: #fff;
-      color: var(--text);
+      background: var(--bg-primary);
+      color: var(--text-primary);
       outline: none;
     }
 
     input:focus, select:focus {
       border-color: var(--primary);
+      background: #FFFFFF;
     }
 
     .grid-2 {
@@ -211,7 +278,7 @@
       gap: 8px;
     }
 
-    @media (max-width: 480px) {
+    @media (max-width: 540px) {
       .grid-2, .grid-3 {
         grid-template-columns: 1fr;
       }
@@ -219,11 +286,11 @@
 
     .btn {
       width: 100%;
-      padding: 12px 14px;
+      height: 42px;
       border: none;
-      border-radius: 10px;
-      font-size: 0.92rem;
-      font-weight: 700;
+      border-radius: 11px;
+      font-size: 0.9rem;
+      font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -231,28 +298,28 @@
       gap: 6px;
     }
 
-    .btn:active { opacity: 0.8; }
-    .btn-sm { padding: 8px 12px; font-size: 0.8rem; width: auto; }
-    .btn-primary { background: var(--primary); color: #fff; }
-    .btn-success { background: var(--success); color: #fff; }
-    .btn-whatsapp { background: #15803d; color: #fff; }
-    .btn-outline { background: #fff; color: var(--text); border: 1.5px solid var(--border); }
+    .btn:active { opacity: 0.85; transform: scale(0.98); }
+    .btn-sm { height: 32px; padding: 0 10px; font-size: 0.78rem; width: auto; }
+    .btn-primary { background: var(--primary); color: #FFFFFF; }
+    .btn-success { background: var(--success); color: #FFFFFF; }
+    .btn-whatsapp { background: #25D366; color: #FFFFFF; font-weight: 700; }
+    .btn-outline { background: var(--bg-primary); color: var(--text-primary); border: 0.5px solid var(--border-strong); }
     .btn-danger { background: var(--danger-bg); color: var(--danger); }
 
     .med-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
     }
 
     .med-card {
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 12px;
-      background: #f8fafc;
+      border: 0.5px solid var(--border-hairline);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      background: var(--bg-primary);
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
     }
 
     .med-top {
@@ -265,31 +332,31 @@
     .med-title {
       font-weight: 700;
       font-size: 0.98rem;
-      color: #0f172a;
+      color: var(--text-primary);
     }
 
     .med-sub {
       font-size: 0.78rem;
-      color: var(--muted);
+      color: var(--text-muted);
     }
 
     .dose-highlight {
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
-      color: #1d4ed8;
-      padding: 8px 12px;
-      border-radius: 8px;
+      background: var(--primary-light);
+      border: 0.5px solid rgba(0, 122, 255, 0.2);
+      color: var(--primary-dark);
+      padding: 10px 12px;
+      border-radius: 10px;
       font-weight: 700;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
     .timer-badge {
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       font-weight: 700;
-      padding: 5px 10px;
+      padding: 4px 10px;
       border-radius: 99px;
       display: inline-flex;
       align-items: center;
@@ -300,10 +367,10 @@
     .timer-wait { background: var(--warning-bg); color: var(--warning); }
 
     .log-item {
-      border-left: 3px solid var(--primary);
-      background: #f8fafc;
-      padding: 10px 12px;
-      border-radius: 0 10px 10px 0;
+      border-left: 4px solid var(--primary);
+      background: var(--bg-primary);
+      padding: 12px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
       margin-bottom: 8px;
       display: flex;
       justify-content: space-between;
@@ -313,119 +380,106 @@
 
     .log-item.high-fever {
       border-left-color: var(--danger);
-      background: #fef2f2;
+      background: var(--danger-bg);
     }
 
     .log-info h4 {
       font-size: 0.92rem;
-      margin-bottom: 3px;
+      margin-bottom: 4px;
+      color: var(--text-primary);
     }
 
     .log-meta {
       font-size: 0.78rem;
-      color: var(--muted);
+      color: var(--text-secondary);
       line-height: 1.4;
     }
 
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.65);
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 14px;
+      padding: 16px;
       z-index: 200;
-      overflow-y: auto;
     }
 
     .modal-backdrop.active { display: flex; }
 
-    .modal {
-      background: #fff;
-      border-radius: var(--radius);
-      max-width: 480px;
+    .modal-sheet {
+      background: var(--bg-elevated);
+      border-radius: var(--radius-lg);
+      max-width: 460px;
       width: 100%;
-      padding: 18px;
-      max-height: 92vh;
+      padding: 22px;
+      max-height: 90vh;
       overflow-y: auto;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     }
 
-    .modal h3 { margin-bottom: 12px; font-size: 1.05rem; }
-    .form-group { margin-bottom: 12px; }
+    .modal-sheet h3 { margin-bottom: 14px; font-size: 1.1rem; font-weight: 700; }
+    .form-group { margin-bottom: 14px; }
 
     .bula-box {
-      background: #f0fdf4;
-      border: 1px solid #bbf7d0;
+      background: var(--success-bg);
+      border: 0.5px solid rgba(52, 199, 89, 0.3);
       border-radius: 10px;
       padding: 10px;
       margin-bottom: 12px;
       font-size: 0.8rem;
-      color: #166534;
+      color: #1B5E20;
       line-height: 1.4;
-    }
-
-    .sync-bar {
-      background: #e0f2fe;
-      border: 1px solid #bae6fd;
-      border-radius: 12px;
-      padding: 10px 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.8rem;
-      color: #0369a1;
-      margin-bottom: 12px;
     }
 
     #toast {
       position: fixed;
-      bottom: 20px;
+      top: 20px;
       left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: #0f172a;
-      color: #fff;
-      padding: 12px 20px;
+      transform: translateX(-50%) translateY(-80px);
+      background: var(--text-primary);
+      color: #FFFFFF;
+      padding: 10px 18px;
       border-radius: 99px;
-      font-size: 0.88rem;
+      font-size: 0.82rem;
       font-weight: 600;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-      transition: transform 0.25s ease;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+      transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
       z-index: 300;
       white-space: nowrap;
     }
-
     #toast.show { transform: translateX(-50%) translateY(0); }
   </style>
 </head>
 <body>
 
   <header>
-    <div class="header-content">
-      <div class="header-title">
-        <h1>🌡️ SOS Febre & Remédios</h1>
-        <small id="syncStatusText">⚡ Versão 4.1 (Com IA Gemini)</small>
-      </div>
-      <div class="parent-toggle">
-        <button type="button" id="btnPai" class="parent-btn active" onclick="setParent('Wilson')">Wilson</button>
-        <button type="button" id="btnMae" class="parent-btn" onclick="setParent('Rayssa')">Rayssa</button>
+    <div class="app-shell">
+      <div class="nav-bar">
+        <div class="brand-title">
+          <span>Gestão Pediátrica</span>
+          <h1>SOS Febre & Remédios</h1>
+        </div>
+        <div class="nav-actions">
+          <button class="btn-ios btn-ios-secondary" onclick="sincronizarManual()" title="Sincronizar com a nuvem">🔄 Sincronizar</button>
+          <button class="btn-ios btn-ios-secondary" onclick="abrirConfigSync()" title="Configurar Token">⚙️ Token</button>
+          <button class="btn-ios btn-ios-secondary" onclick="enviarRelatorioWhatsApp()" title="Enviar relatório para Rayssa">📄 Relatório</button>
+          <div class="parent-toggle">
+            <button type="button" id="btnPai" class="parent-btn active" onclick="setParent('Wilson')">Wilson</button>
+            <button type="button" id="btnMae" class="parent-btn" onclick="setParent('Rayssa')">Rayssa</button>
+          </div>
+        </div>
       </div>
     </div>
   </header>
 
   <div class="container">
 
-    <!-- BARRA DE CONFIGURAÇÃO RÁPIDA -->
-    <div class="sync-bar">
-      <div>
-        <strong>⚙️ IA Gemini:</strong> <span id="labelStatusGemini">Não configurada</span>
-      </div>
-      <button class="btn btn-outline btn-sm" onclick="abrirModalConfig()" style="width: auto;">Configurar</button>
-    </div>
-
     <!-- 1. SELETOR DE FILHOS -->
-    <div class="card">
+    <div class="ios-card">
       <div class="card-header">
         <span class="card-title">👦 Selecione o Filho</span>
         <button class="btn btn-outline btn-sm" onclick="abrirModalFilho()">+ Novo Filho</button>
@@ -434,19 +488,19 @@
     </div>
 
     <!-- 2. FARMACINHA & CALCULADORA -->
-    <div class="card">
+    <div class="ios-card">
       <div class="card-header">
-        <span class="card-title">💊 Medicamentos & Dose p/ <span id="nomeFilhoAtivo">...</span></span>
+        <span class="card-title">💊 Medicamentos p/ <span id="nomeFilhoAtivo">...</span></span>
         <button class="btn btn-primary btn-sm" onclick="abrirModalMed()">+ Novo Remédio</button>
       </div>
-      <p style="font-size:0.78rem; color:var(--muted); margin-bottom:10px;">
-        Doses calculadas para <strong id="pesoFilhoAtivo">0 kg</strong> com controle automático do horário liberado.
+      <p style="font-size:0.78rem; color:var(--text-secondary); margin-bottom:12px;">
+        Doses calculadas automaticamente para <strong id="pesoFilhoAtivo">0 kg</strong>.
       </p>
       <div id="medsContainer" class="med-list"></div>
     </div>
 
     <!-- 3. REGISTRAR FEBRE OU MEDICAÇÃO -->
-    <div class="card">
+    <div class="ios-card">
       <div class="card-header">
         <span class="card-title">📝 Registrar Febre / Dose Dada</span>
       </div>
@@ -458,10 +512,10 @@
           </div>
           <div>
             <label>Temperatura (°C)</label>
-            <input type="number" step="0.1" id="regTemp" placeholder="Ex: 38.5" />
+            <input type="number" step="0.1" id="regTemp" placeholder="Ex: 38.5" inputmode="decimal" />
           </div>
           <div>
-            <label>Medicamento Dado</label>
+            <label>Medicamento</label>
             <select id="regMedId" onchange="preencherDoseSugerida()">
               <option value="">Apenas medir temp.</option>
             </select>
@@ -474,20 +528,20 @@
             <input type="text" id="regDose" placeholder="Ex: 14 gotas ou 5 mL" />
           </div>
           <div>
-            <label>Observação rápida (opcional)</label>
+            <label>Observação rápida</label>
             <input type="text" id="regObs" placeholder="Ex: Banho morno..." />
           </div>
         </div>
 
-        <div class="grid-2" style="margin-top: 8px;">
+        <div class="grid-2" style="margin-top: 10px;">
           <button type="submit" class="btn btn-primary">✅ Só Salvar</button>
-          <button type="button" class="btn btn-whatsapp" onclick="salvarEEnviarWhats()">📲 Salvar e Sincronizar no Whats</button>
+          <button type="button" class="btn btn-whatsapp" onclick="salvarEEnviarWhats()">📲 Salvar e Enviar Whats</button>
         </div>
       </form>
     </div>
 
     <!-- 4. HISTÓRICO -->
-    <div class="card">
+    <div class="ios-card">
       <div class="card-header">
         <span class="card-title">🕒 Histórico de <span id="nomeFilhoHist">...</span></span>
         <button class="btn btn-danger btn-sm" onclick="limparHistoricoFilho()">Limpar Histórico</button>
@@ -499,7 +553,7 @@
 
   <!-- MODAL: CADASTRAR / EDITAR FILHO -->
   <div id="modalFilho" class="modal-backdrop">
-    <div class="modal">
+    <div class="modal-sheet">
       <h3 id="tituloModalFilho">Cadastrar Filho</h3>
       <input type="hidden" id="editKidId" />
       <div class="form-group">
@@ -508,9 +562,9 @@
       </div>
       <div class="form-group">
         <label>Peso Atual (kg) *</label>
-        <input type="number" step="0.1" id="inputKidWeight" placeholder="Ex: 18" />
+        <input type="number" step="0.1" id="inputKidWeight" placeholder="Ex: 18" inputmode="decimal" />
       </div>
-      <div style="display:flex; gap:8px; margin-top:14px;">
+      <div style="display:flex; gap:10px; margin-top:16px;">
         <button class="btn btn-outline" onclick="fecharModais()">Cancelar</button>
         <button id="btnDeleteKid" class="btn btn-danger" style="display:none;" onclick="excluirFilho()">Excluir</button>
         <button class="btn btn-primary" onclick="salvarFilho()">Salvar</button>
@@ -518,33 +572,31 @@
     </div>
   </div>
 
-  <!-- MODAL: CADASTRAR / BUSCAR BULA DE MEDICAMENTO -->
+  <!-- MODAL: MEDICAMENTO -->
   <div id="modalMed" class="modal-backdrop">
-    <div class="modal">
-      <h3>💊 Cadastrar ou Buscar Medicamento</h3>
+    <div class="modal-sheet">
+      <h3>💊 Novo Medicamento</h3>
       <div class="form-group">
-        <label>1. Nome do Remédio (ou Princípio Ativo) *</label>
-        <input type="text" id="medNome" placeholder="Ex: Ibuprofeno, Dipirona, Amoxicilina..." />
+        <label>Nome do Remédio *</label>
+        <input type="text" id="medNome" placeholder="Ex: Dipirona, Ibuprofeno..." />
       </div>
 
       <div class="grid-2 form-group">
         <div>
-          <label>2. Quantos mg tem no frasco? *</label>
-          <input type="number" step="0.1" id="medMg" placeholder="Ex: 100 ou 250" oninput="recalcularConversaoBula()" />
+          <label>mg no Frasco *</label>
+          <input type="number" step="0.1" id="medMg" placeholder="Ex: 500" inputmode="decimal" oninput="recalcularConversaoBula()" />
         </div>
         <div>
-          <label>Em quantos mL? (Padrão: 1 mL)</label>
+          <label>Base (mL)</label>
           <select id="medMlBase" onchange="recalcularConversaoBula()">
-            <option value="1">por 1 mL (Gotas / Solução)</option>
-            <option value="5">por 5 mL (Suspensão / Xarope)</option>
+            <option value="1">1 mL (Gotas)</option>
+            <option value="5">5 mL (Xarope)</option>
           </select>
         </div>
       </div>
 
       <div class="form-group">
-        <button type="button" class="btn btn-success" onclick="buscarBulaOnline()">
-          🔍 Buscar Posologia na Bula (com IA)
-        </button>
+        <button type="button" class="btn btn-success" onclick="buscarBulaOnline()">🔍 Buscar Posologia Automática</button>
       </div>
 
       <div id="bulaResultadoBox" class="bula-box" style="display:none;"></div>
@@ -553,93 +605,78 @@
         <div>
           <label>Apresentação</label>
           <select id="medUnidade" onchange="recalcularConversaoBula()">
-            <option value="gotas">Gotas (20 gotas = 1 mL)</option>
-            <option value="mL">mL (Seringa dosadora)</option>
+            <option value="gotas">Gotas</option>
+            <option value="mL">mL</option>
           </select>
         </div>
         <div>
-          <label>Intervalo entre Doses (Horas) *</label>
+          <label>Intervalo (Horas) *</label>
           <select id="medIntervalo">
-            <option value="4">De 4 em 4 horas</option>
-            <option value="6" selected>De 6 em 6 horas</option>
-            <option value="8">De 8 em 8 horas</option>
-            <option value="12">De 12 em 12 horas</option>
-            <option value="24">1x ao dia (24h)</option>
+            <option value="4">4 em 4h</option>
+            <option value="6" selected>6 em 6h</option>
+            <option value="8">8 em 8h</option>
+            <option value="12">12 em 12h</option>
+            <option value="24">24h</option>
           </select>
         </div>
       </div>
 
       <div class="grid-2 form-group">
         <div>
-          <label>Dose da Bula (mg por kg)</label>
-          <input type="number" step="0.1" id="medMgPorKg" placeholder="Ex: 10" oninput="recalcularConversaoBula()" />
+          <label>mg por kg (Bula)</label>
+          <input type="number" step="0.1" id="medMgPorKg" placeholder="Ex: 20" inputmode="decimal" oninput="recalcularConversaoBula()" />
         </div>
         <div>
-          <label>Fator Final (<span id="lblFatorUnid">gotas/kg</span>) *</label>
-          <input type="number" step="0.01" id="medFatorPorKg" placeholder="Ex: 1.0" />
+          <label>Fator Final *</label>
+          <input type="number" step="0.01" id="medFatorPorKg" placeholder="Ex: 0.8" inputmode="decimal" />
         </div>
       </div>
 
       <div class="form-group">
-        <label>Dose Máxima por tomada (Segurança)</label>
-        <input type="number" step="1" id="medMaxDose" placeholder="Ex: 40 (gotas ou mL)" />
+        <label>Dose Máxima por Tomada</label>
+        <input type="number" step="1" id="medMaxDose" placeholder="Ex: 40" inputmode="numeric" />
       </div>
 
-      <div style="display:flex; gap:8px; margin-top:14px;">
+      <div style="display:flex; gap:10px; margin-top:16px;">
         <button class="btn btn-outline" onclick="fecharModais()">Cancelar</button>
-        <button class="btn btn-primary" onclick="salvarMedicamento()">Salvar na Farmacinha</button>
+        <button class="btn btn-primary" onclick="salvarMedicamento()">Salvar</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: CONFIGURAÇÃO (GEMINI AI) -->
-  <div id="modalConfig" class="modal-backdrop">
-    <div class="modal">
-      <h3>⚙️ Configuração da IA Gemini</h3>
+  <!-- MODAL CONFIG GIST SYNC -->
+  <div id="modalSync" class="modal-backdrop" onclick="if(event.target.id==='modalSync') fecharConfigSync()">
+    <div class="modal-sheet">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h3>Configurar Token do GitHub</h3>
+        <button class="btn btn-outline btn-sm" onclick="fecharConfigSync()">✕</button>
+      </div>
       <div class="form-group">
-        <label>Chave da API do Gemini (Google AI Studio)</label>
-        <input type="password" id="cfgGeminiKey" placeholder="AIzaSy..." />
-        <small style="color:var(--muted); font-size:0.75rem; display:block; margin-top:4px;">
-          Insira sua chave gratuita para permitir que o app consulte bulas e posologias raras de medicamentos automaticamente na internet.
-        </small>
+        <label>GitHub Personal Access Token (ghp_...)</label>
+        <input type="password" id="inputToken" placeholder="Cole seu token aqui" />
       </div>
-      <div style="display:flex; gap:8px; margin-top:14px;">
-        <button class="btn btn-outline" onclick="fecharModais()">Fechar</button>
-        <button class="btn btn-primary" onclick="salvarConfigGemini()">Salvar Chave</button>
+      <p style="font-size:0.76rem; color:var(--text-secondary); margin-bottom:14px;">
+        Cole o mesmo token do GitHub no seu iPhone, iPad e celular da Rayssa para sincronizar automaticamente.
+      </p>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="salvarConfigSync()">Salvar Token</button>
       </div>
     </div>
   </div>
 
-  <div id="toast">Salvo!</div>
+  <div id="toast">Salvo</div>
 
   <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
-    }
-    if ('caches' in window) {
-      caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
-    }
-
-    const STORAGE_KEY = 'sos_febre_familia_v41';
+    const STORAGE_KEY = 'sos_febre_titanium_v1';
+    const SYNC_CONFIG_KEY = 'sos_febre_sync_config_v1';
 
     const BASE_BULAS_BR = [
-      { termos: ['dipirona', 'novalgina', 'maxalgina'], mgPorKg: 20, intervalo: 6, maxGotas: 40, nota: 'Bula Dipirona: 15 a 25 mg/kg/dose a cada 6h.' },
-      { termos: ['paracetamol', 'tylenol'], mgPorKg: 13, intervalo: 6, maxGotas: 35, nota: 'Bula Paracetamol: 10 a 15 mg/kg/dose a cada 6h.' },
-      { termos: ['ibuprofeno', 'alivium', 'buscofem', 'dalsy'], mgPorKg: 10, intervalo: 8, maxGotas: 40, nota: 'Bula Ibuprofeno: 5 a 10 mg/kg/dose a cada 6h a 8h.' },
-      { termos: ['amoxicilina', 'amoxil', 'clavulin', 'novamox'], mgPorKg: 16.6, intervalo: 8, maxGotas: 15, nota: 'Bula Amoxicilina: 50 mg/kg/dia dividido de 8/8h (~16,6 mg/kg/dose).' },
-      { termos: ['azitromicina', 'astro', 'zitromax'], mgPorKg: 10, intervalo: 24, maxGotas: 12, nota: 'Bula Azitromicina: 10 mg/kg 1x ao dia (24/24h).' },
-      { termos: ['prednisolona', 'prelone', 'predsim'], mgPorKg: 1, intervalo: 24, maxGotas: 20, nota: 'Bula Prednisolona: 1 a 2 mg/kg/dia.' },
-      { termos: ['cefalexina', 'keflex'], mgPorKg: 12.5, intervalo: 6, maxGotas: 15, nota: 'Bula Cefalexina: 25 a 50 mg/kg/dia dividido de 6/6h.' },
-      { termos: ['dexclorfeniramina', 'polaramine', 'histamin'], mgPorKg: 0.05, intervalo: 8, maxGotas: 10, nota: 'Bula Dexclorfeniramina: 0,05 mg/kg/dose de 8/8h.' },
-      { termos: ['loratadina', 'claritin'], mgPorKg: 0.2, intervalo: 24, maxGotas: 10, nota: 'Bula Loratadina: <30kg: 5 mL 1x ao dia.' },
-      { termos: ['desloratadina', 'desalex', 'esalerg'], mgPorKg: 0.1, intervalo: 24, maxGotas: 10, nota: 'Bula Desloratadina: 2,5 mL a 5 mL 1x ao dia.' },
-      { termos: ['bromoprida', 'digesan', 'plabel'], mgPorKg: 0.15, intervalo: 8, maxGotas: 30, nota: 'Bula Bromoprida gotas (4mg/mL): 1 gota/kg de 8/8h.' },
-      { termos: ['ondansetrona', 'vonau', 'ansentron'], mgPorKg: 0.15, intervalo: 8, maxGotas: 8, nota: 'Bula Ondansetrona: 0,15 mg/kg/dose de 8/8h.' },
-      { termos: ['hidroxizina', 'hixizine'], mgPorKg: 0.7, intervalo: 8, maxGotas: 15, nota: 'Bula Hidroxizina: ~0,7 mg/kg/dose de 8/8h.' },
-      { termos: ['cetoprofeno', 'profids'], mgPorKg: 1, intervalo: 8, maxGotas: 50, nota: 'Bula Cetoprofeno gotas (20mg/mL): 1 gota/kg de 8/8h.' }
+      { termos: ['dipirona', 'novalgina'], mgPorKg: 20, intervalo: 6, maxGotas: 40, nota: 'Dipirona: 15 a 25 mg/kg a cada 6h.' },
+      { termos: ['paracetamol', 'tylenol'], mgPorKg: 13, intervalo: 6, maxGotas: 35, nota: 'Paracetamol: 10 a 15 mg/kg a cada 6h.' },
+      { termos: ['ibuprofeno', 'alivium'], mgPorKg: 10, intervalo: 8, maxGotas: 40, nota: 'Ibuprofeno: 5 a 10 mg/kg a cada 8h.' }
     ];
 
-    const defaultState = {
+    let estado = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
       parentAtivo: 'Wilson',
       geminiKey: '',
       kidAtivoId: 'kid1',
@@ -649,165 +686,153 @@
       ],
       meds: [
         { id: 'm1', nome: 'Dipirona Gotas', mg: 500, mlBase: 1, unidade: 'gotas', intervalo: 6, mgPorKg: 20, fatorPorKg: 0.8, maxDose: 40 },
-        { id: 'm2', nome: 'Ibuprofeno Gotas', mg: 100, mlBase: 1, unidade: 'gotas', intervalo: 8, mgPorKg: 10, fatorPorKg: 2.0, maxDose: 40 },
-        { id: 'm3', nome: 'Paracetamol Gotas', mg: 200, mlBase: 1, unidade: 'gotas', intervalo: 6, mgPorKg: 13, fatorPorKg: 1.3, maxDose: 35 }
+        { id: 'm2', nome: 'Ibuprofeno Gotas', mg: 100, mlBase: 1, unidade: 'gotas', intervalo: 8, mgPorKg: 10, fatorPorKg: 2.0, maxDose: 40 }
       ],
-      logs: []
+      logs: [],
+      deletedIds: [],
+      orderTime: 0
     };
 
-    let state = carregarEstadoLocal();
+    let syncConfig = JSON.parse(localStorage.getItem(SYNC_CONFIG_KEY)) || { token: '', gistId: '' };
 
-    function carregarEstadoLocal() {
-      const salvo = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('sos_febre_familia_v4');
-      if (salvo) {
-        try {
-          const parsed = JSON.parse(salvo);
-          return { ...defaultState, ...parsed };
-        } catch (e) {}
-      }
-      return JSON.parse(JSON.stringify(defaultState));
+    renderizarTudo();
+    if (syncConfig.token) baixarDaNuvem();
+
+    function salvarNoAparelho() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(estado));
+      renderizarTudo();
+      enviarParaNuvem();
     }
 
-    function salvarEstado() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    async function descobrirGistAutomaticamente() {
+      if (!syncConfig.token) return;
+      try {
+        const res = await fetch('https://api.github.com/gists', {
+          headers: { 'Authorization': `token ${syncConfig.token}`, 'Accept': 'application/vnd.github.v3+json' }
+        });
+        if (res.ok) {
+          const gists = await res.json();
+          const meuGist = gists.find(g => g.files && g.files['sos_febre_dados.json']);
+          if (meuGist) {
+            syncConfig.gistId = meuGist.id;
+            localStorage.setItem(SYNC_CONFIG_KEY, JSON.stringify(syncConfig));
+          }
+        }
+      } catch (e) {}
+    }
+
+    async function baixarDaNuvem() {
+      if (!syncConfig.token) return;
+      if (!syncConfig.gistId) await descobrirGistAutomaticamente();
+      if (!syncConfig.gistId) return;
+
+      try {
+        const res = await fetch(`https://api.github.com/gists/${syncConfig.gistId}`, {
+          headers: { 'Authorization': `token ${syncConfig.token}`, 'Accept': 'application/vnd.github.v3+json' }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const arquivo = data.files['sos_febre_dados.json'];
+          if (arquivo) {
+            const dadosNuvem = JSON.parse(arquivo.content);
+            mesclarDadosNuvem(dadosNuvem);
+          }
+        }
+      } catch (e) {}
+    }
+
+    async function enviarParaNuvem() {
+      if (!syncConfig.token) return;
+      if (!syncConfig.gistId) await descobrirGistAutomaticamente();
+
+      try {
+        const headers = { 'Authorization': `token ${syncConfig.token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+        const body = {
+          description: "Sincronização SOS Febre & Medicação",
+          files: { "sos_febre_dados.json": { content: JSON.stringify(estado, null, 2) } }
+        };
+
+        let url = 'https://api.github.com/gists';
+        let method = 'POST';
+        if (syncConfig.gistId) {
+          url = `https://api.github.com/gists/${syncConfig.gistId}`;
+          method = 'PATCH';
+        }
+
+        const res = await fetch(url, { method, headers, body: JSON.stringify(body) });
+        if (res.ok) {
+          const data = await res.json();
+          if (!syncConfig.gistId) {
+            syncConfig.gistId = data.id;
+            localStorage.setItem(SYNC_CONFIG_KEY, JSON.stringify(syncConfig));
+          }
+        }
+      } catch (e) {}
+    }
+
+    async function sincronizarManual() {
+      if (!syncConfig.token) { abrirConfigSync(); return; }
+      mostrarToast('Sincronizando...');
+      await baixarDaNuvem();
+      await enviarParaNuvem();
+      mostrarToast('Atualizado!');
+    }
+
+    function abrirConfigSync() {
+      document.getElementById('inputToken').value = syncConfig.token || '';
+      document.getElementById('modalSync').classList.add('active');
+    }
+    function fecharConfigSync() { document.getElementById('modalSync').classList.remove('active'); }
+    function salvarConfigSync() {
+      syncConfig.token = document.getElementById('inputToken').value.trim();
+      syncConfig.gistId = '';
+      localStorage.setItem(SYNC_CONFIG_KEY, JSON.stringify(syncConfig));
+      fecharConfigSync();
+      mostrarToast('Token salvo!');
+      baixarDaNuvem();
+    }
+
+    function mesclarDadosNuvem(nuvem) {
+      if (!nuvem) return;
+      if (nuvem.kids) estado.kids = nuvem.kids;
+      if (nuvem.meds) estado.meds = nuvem.meds;
+      if (nuvem.logs) {
+        let mapa = new Map(estado.logs.map(l => [l.id, l]));
+        nuvem.logs.forEach(l => mapa.set(l.id, l));
+        estado.logs = Array.from(mapa.values()).sort((a,b) => b.timestamp - a.timestamp);
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(estado));
       renderizarTudo();
     }
 
-    function toToken(str) {
-      return String(str || '')
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-        .trim()
-        .replace(/\s+/g, '_')
-        .replace(/[^a-zA-Z0-9._-]/g, '');
-    }
-
-    function fromToken(str) {
-      return String(str || '').replace(/_/g, ' ');
-    }
-
-    function receberSincronizacaoPeloLink() {
-      const p = new URLSearchParams(window.location.search);
-      if (!p.has('s')) return;
-
-      try {
-        if (p.get('k')) {
-          const pares = p.get('k').split('_').filter(Boolean);
-          pares.forEach((par, idx) => {
-            const [nomeTok, pesoStr] = par.split('-');
-            const nomeLimpo = fromToken(nomeTok);
-            const pesoNum = parseFloat(pesoStr);
-            if (nomeLimpo && pesoNum > 0) {
-              const existente = state.kids.find(x => toToken(x.nome).toLowerCase() === nomeTok.toLowerCase());
-              if (existente) {
-                existente.peso = pesoNum;
-              } else {
-                state.kids.push({ id: 'kid_' + idx + '_' + Date.now(), nome: nomeLimpo, peso: pesoNum });
-              }
-            }
-          });
-        }
-
-        const kidNome = fromToken(p.get('c') || 'Zion');
-        const kidPeso = parseFloat(p.get('w')) || 18;
-        let kid = state.kids.find(k => toToken(k.nome).toLowerCase() === toToken(kidNome).toLowerCase());
-        if (!kid) {
-          kid = { id: 'kid_' + Date.now(), nome: kidNome, peso: kidPeso };
-          state.kids.unshift(kid);
-        } else {
-          kid.peso = kidPeso;
-        }
-        state.kidAtivoId = kid.id;
-
-        const medNome = fromToken(p.get('m') || '');
-        const medIntervalo = parseInt(p.get('i'), 10) || 6;
-        let medObj = null;
-
-        if (medNome && medNome !== 'Nenhum') {
-          medObj = state.meds.find(m => toToken(m.nome).toLowerCase() === toToken(medNome).toLowerCase());
-          if (!medObj) {
-            const fator = parseFloat(p.get('f')) || 1;
-            const unid = p.get('u') || 'gotas';
-            medObj = {
-              id: 'med_' + Date.now(),
-              nome: medNome,
-              mg: 0,
-              mlBase: 1,
-              unidade: unid,
-              intervalo: medIntervalo,
-              mgPorKg: 10,
-              fatorPorKg: fator,
-              maxDose: 40
-            };
-            state.meds.push(medObj);
-          }
-        }
-
-        const tsSegundos = parseInt(p.get('ts'), 10);
-        const ts = tsSegundos ? tsSegundos * 1000 : Date.now();
-        const hora = (p.get('h') || '00-00').replace('-', ':');
-        const dataStr = (p.get('dt') || '').replace('-', '/') || new Date(ts).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
-        const temp = p.get('t') && p.get('t') !== '0' ? p.get('t') : '';
-        const dose = p.get('d') && p.get('d') !== '0' ? fromToken(p.get('d')) : '';
-        const obs = p.get('o') ? fromToken(p.get('o')) : '';
-        const autor = fromToken(p.get('p') || 'Wilson');
-
-        const jaExiste = state.logs.some(l => l.hora === hora && toToken(l.kidNome) === toToken(kid.nome) && l.medNome === (medObj ? medObj.nome : medNome));
-
-        if (!jaExiste && (temp || medNome !== 'Nenhum')) {
-          state.logs.unshift({
-            id: 'log_' + ts,
-            kidId: kid.id,
-            kidNome: kid.nome,
-            kidPeso: kid.peso,
-            parent: autor,
-            hora,
-            dataStr,
-            timestamp: ts,
-            temp,
-            medId: medObj ? medObj.id : '',
-            medNome: medNome !== 'Nenhum' ? medNome : '',
-            intervalo: medIntervalo,
-            dose,
-            obs
-          });
-        }
-
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        window.history.replaceState({}, document.title, window.location.pathname);
-        mostrarToast('✅ Sincronizado pelo link do WhatsApp!');
-      } catch (e) {
-        console.error('Erro ao sincronizar link:', e);
-      }
-    }
-
     function setParent(nome) {
-      state.parentAtivo = nome;
+      estado.parentAtivo = nome;
       document.getElementById('btnPai').classList.toggle('active', nome === 'Wilson');
       document.getElementById('btnMae').classList.toggle('active', nome === 'Rayssa');
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      salvarNoAparelho();
     }
 
     function selecionarFilho(id) {
-      state.kidAtivoId = id;
+      estado.kidAtivoId = id;
       renderizarTudo();
     }
 
     function getFilhoAtivo() {
-      return state.kids.find(k => k.id === state.kidAtivoId) || state.kids[0];
+      return estado.kids.find(k => k.id === estado.kidAtivoId) || estado.kids[0];
     }
 
     function abrirModalFilho(id = '') {
       const modal = document.getElementById('modalFilho');
       const btnDel = document.getElementById('btnDeleteKid');
       if (id) {
-        const k = state.kids.find(x => x.id === id);
-        document.getElementById('tituloModalFilho').textContent = 'Editar Nome / Peso';
+        const k = estado.kids.find(x => x.id === id);
+        document.getElementById('tituloModalFilho').textContent = 'Editar Filho';
         document.getElementById('editKidId').value = k.id;
         document.getElementById('inputKidName').value = k.nome;
         document.getElementById('inputKidWeight').value = k.peso;
-        btnDel.style.display = state.kids.length > 1 ? 'inline-flex' : 'none';
+        btnDel.style.display = estado.kids.length > 1 ? 'inline-flex' : 'none';
       } else {
-        document.getElementById('tituloModalFilho').textContent = 'Adicionar Filho';
+        document.getElementById('tituloModalFilho').textContent = 'Cadastrar Filho';
         document.getElementById('editKidId').value = '';
         document.getElementById('inputKidName').value = '';
         document.getElementById('inputKidWeight').value = '';
@@ -821,46 +846,32 @@
       const nome = document.getElementById('inputKidName').value.trim();
       const peso = parseFloat(document.getElementById('inputKidWeight').value);
 
-      if (!nome || isNaN(peso) || peso <= 0) {
-        mostrarToast('⚠️ Informe o nome e o peso válido');
-        return;
-      }
+      if (!nome || isNaN(peso) || peso <= 0) { mostrarToast('Informe nome e peso válidos'); return; }
 
       if (id) {
-        const idx = state.kids.findIndex(k => k.id === id);
-        if (idx > -1) {
-          state.kids[idx].nome = nome;
-          state.kids[idx].peso = peso;
-        }
+        const k = estado.kids.find(x => x.id === id);
+        if (k) { k.nome = nome; k.peso = peso; }
       } else {
         const novoId = 'kid_' + Date.now();
-        state.kids.push({ id: novoId, nome, peso });
-        state.kidAtivoId = novoId;
+        estado.kids.push({ id: novoId, nome, peso });
+        estado.kidAtivoId = novoId;
       }
-
       fecharModais();
-      salvarEstado();
-      mostrarToast('✅ Peso/Nome salvo!');
+      salvarNoAparelho();
     }
 
     function excluirFilho() {
       const id = document.getElementById('editKidId').value;
-      if (state.kids.length <= 1) return;
-      state.kids = state.kids.filter(k => k.id !== id);
-      state.kidAtivoId = state.kids[0].id;
+      if (estado.kids.length <= 1) return;
+      estado.kids = estado.kids.filter(k => k.id !== id);
+      estado.kidAtivoId = estado.kids[0].id;
       fecharModais();
-      salvarEstado();
+      salvarNoAparelho();
     }
 
     function abrirModalMed() {
       document.getElementById('medNome').value = '';
       document.getElementById('medMg').value = '';
-      document.getElementById('medMlBase').value = '1';
-      document.getElementById('medUnidade').value = 'gotas';
-      document.getElementById('medIntervalo').value = '6';
-      document.getElementById('medMgPorKg').value = '';
-      document.getElementById('medFatorPorKg').value = '';
-      document.getElementById('medMaxDose').value = '40';
       document.getElementById('bulaResultadoBox').style.display = 'none';
       document.getElementById('modalMed').classList.add('active');
     }
@@ -871,73 +882,29 @@
       const mgPorKg = parseFloat(document.getElementById('medMgPorKg').value);
       const unidade = document.getElementById('medUnidade').value;
 
-      document.getElementById('lblFatorUnid').textContent = unidade === 'gotas' ? 'gotas/kg' : 'mL/kg';
-
       if (mgFrasco > 0 && mgPorKg > 0) {
-        const concentracaoPorMl = mgFrasco / mlBase;
-        const mlPorKg = mgPorKg / concentracaoPorMl;
-        if (unidade === 'gotas') {
-          document.getElementById('medFatorPorKg').value = (mlPorKg * 20).toFixed(2);
-        } else {
-          document.getElementById('medFatorPorKg').value = mlPorKg.toFixed(2);
-        }
+        const conc = mgFrasco / mlBase;
+        const mlKg = mgPorKg / conc;
+        document.getElementById('medFatorPorKg').value = unidade === 'gotas' ? (mlKg * 20).toFixed(2) : mlKg.toFixed(2);
       }
     }
 
-    // BUSCA DE BULA LOCAL + SUPORTE À IA GEMINI CONFIGURADA PELO USUÁRIO
-    async function buscarBulaOnline() {
-      const nomeBusca = document.getElementById('medNome').value.trim().toLowerCase();
-      const mgFrasco = parseFloat(document.getElementById('medMg').value);
+    function buscarBulaOnline() {
+      const termo = document.getElementById('medNome').value.trim().toLowerCase();
       const box = document.getElementById('bulaResultadoBox');
-
-      if (!nomeBusca) {
-        mostrarToast('⚠️ Digite o nome do medicamento');
-        return;
-      }
+      if (!termo) { mostrarToast('Digite o nome'); return; }
 
       box.style.display = 'block';
-      box.innerHTML = '⏳ Consultando posologia...';
-
-      // 1. Procura na base interna de bulas brasileiras
-      const encontrado = BASE_BULAS_BR.find(b => b.termos.some(t => nomeBusca.includes(t)));
-      if (encontrado) {
-        document.getElementById('medMgPorKg').value = encontrado.mgPorKg;
-        document.getElementById('medIntervalo').value = String(encontrado.intervalo);
-        document.getElementById('medMaxDose').value = encontrado.maxGotas;
-        if (document.getElementById('medMlBase').value === '5') {
-          document.getElementById('medUnidade').value = 'mL';
-        }
+      const enc = BASE_BULAS_BR.find(b => b.termos.some(t => termo.includes(t)));
+      if (enc) {
+        document.getElementById('medMgPorKg').value = enc.mgPorKg;
+        document.getElementById('medIntervalo').value = String(enc.intervalo);
+        document.getElementById('medMaxDose').value = enc.maxGotas;
         recalcularConversaoBula();
-        box.innerHTML = `✅ <strong>Bula Localizada:</strong> ${encontrado.nota}`;
-        return;
+        box.innerHTML = `✅ <strong>Bula Localizada:</strong> ${enc.nota}`;
+      } else {
+        box.innerHTML = `ℹ️ Preencha os dados de mg/kg manualmente abaixo.`;
       }
-
-      // 2. Se não estiver na base interna, usa a chave do Gemini configurada pelo usuário
-      if (state.geminiKey && navigator.onLine) {
-        try {
-          box.innerHTML = '⏳ Consultando IA Gemini...';
-          const prompt = `Você é um farmacêutico pediátrico. Medicamento "${nomeBusca}" concentração "${mgFrasco || 'padrão'} mg". Responda APENAS um JSON válido: {"mgPorKg": numero, "intervalo": horas, "maxDose": numero, "resumo": "explicacao curta"}`;
-          const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${state.geminiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-          });
-          const data = await resp.json();
-          const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-          const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-          if (jsonMatch) {
-            const info = JSON.parse(jsonMatch[0]);
-            document.getElementById('medMgPorKg').value = info.mgPorKg;
-            document.getElementById('medIntervalo').value = String(info.intervalo || 8);
-            document.getElementById('medMaxDose').value = info.maxDose || 40;
-            recalcularConversaoBula();
-            box.innerHTML = `✅ <strong>Bula Online (Gemini AI):</strong> ${info.resumo}`;
-            return;
-          }
-        } catch (err) {}
-      }
-
-      box.innerHTML = `ℹ️ Medicamento não encontrado na base rápida. <a href="https://www.google.com/search?q=bula+posologia+pediatrica+mg+kg+${encodeURIComponent(nomeBusca)}" target="_blank" style="color:#15803d;font-weight:700;">Toque para ver no Google</a> e preencha a "Dose da Bula (mg por kg)" manualmente abaixo.`;
     }
 
     function salvarMedicamento() {
@@ -947,80 +914,44 @@
       const unidade = document.getElementById('medUnidade').value;
       const intervalo = parseInt(document.getElementById('medIntervalo').value, 10) || 6;
       const mgPorKg = parseFloat(document.getElementById('medMgPorKg').value) || 0;
-      const fatorPorKg = parseFloat(document.getElementById('medFatorPorKg').value);
-      const maxDose = parseFloat(document.getElementById('medMaxDose').value) || 99;
+      const fatorPorKg = parseFloat(document.getElementById('medFatorPorKg').value) || 1;
+      const maxDose = parseFloat(document.getElementById('medMaxDose').value) || 40;
 
-      if (!nome || isNaN(fatorPorKg) || fatorPorKg <= 0) {
-        mostrarToast('⚠️ Preencha o nome, os mg e clique em Buscar Bula');
-        return;
-      }
+      if (!nome) { mostrarToast('Informe o nome'); return; }
 
-      state.meds.push({
-        id: 'med_' + Date.now(),
-        nome: mg ? `${nome} ${mg}mg` : nome,
-        mg, mlBase, unidade, intervalo, mgPorKg, fatorPorKg, maxDose
-      });
-
+      estado.meds.push({ id: 'med_' + Date.now(), nome: mg ? `${nome} ${mg}mg` : nome, mg, mlBase, unidade, intervalo, mgPorKg, fatorPorKg, maxDose });
       fecharModais();
-      salvarEstado();
-      mostrarToast('💊 Medicamento salvo!');
+      salvarNoAparelho();
     }
 
     function removerMed(id) {
-      state.meds = state.meds.filter(m => m.id !== id);
-      salvarEstado();
+      estado.meds = estado.meds.filter(m => m.id !== id);
+      salvarNoAparelho();
     }
 
     function calcularDoseParaFilho(med, peso) {
       let bruta = peso * med.fatorPorKg;
       if (med.maxDose && bruta > med.maxDose) bruta = med.maxDose;
-      const valorFormatado = med.unidade === 'gotas'
-        ? Math.round(bruta)
-        : (Math.round(bruta * 2) / 2).toFixed(1).replace('.0', '');
-      return `${valorFormatado} ${med.unidade}`;
+      return med.unidade === 'gotas' ? `${Math.round(bruta)} gotas` : `${(Math.round(bruta * 2) / 2)} mL`;
     }
 
     function getStatusHorarioMed(med, kid) {
-      const ultimoLog = state.logs.find(l =>
-        toToken(l.kidNome).toLowerCase() === toToken(kid.nome).toLowerCase() &&
-        toToken(l.medNome).toLowerCase() === toToken(med.nome).toLowerCase()
-      );
-      if (!ultimoLog) return { liberado: true, texto: '🟢 Liberado para uso' };
-
-      const proxTimestamp = ultimoLog.timestamp + (med.intervalo * 3600 * 1000);
-      const agora = Date.now();
-      const proxData = new Date(proxTimestamp);
-      const horaLiberada = proxData.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-
-      if (agora >= proxTimestamp) {
-        return { liberado: true, texto: `🟢 Liberado (Última às ${ultimoLog.hora})` };
-      } else {
-        const diffMin = Math.ceil((proxTimestamp - agora) / 60000);
-        const h = Math.floor(diffMin / 60);
-        const m = diffMin % 60;
-        return {
-          liberado: false,
-          horaLiberada,
-          texto: `⏳ Liberado às ${horaLiberada} (faltam ${h}h ${m}m)`
-        };
-      }
+      const ultimo = estado.logs.find(l => l.kidNome === kid.nome && l.medNome === med.nome);
+      if (!ultimo) return { liberado: true, texto: '🟢 Liberado' };
+      const prox = ultimo.timestamp + (med.intervalo * 3600 * 1000);
+      if (Date.now() >= prox) return { liberado: true, texto: '🟢 Liberado' };
+      const diff = Math.ceil((prox - Date.now()) / 60000);
+      return { liberado: false, texto: `⏳ Liberado em ${Math.floor(diff/60)}h ${diff%60}m` };
     }
 
-    function getHoraAtualStr() {
-      return new Date().toTimeString().slice(0, 5);
-    }
+    function getHoraAtualStr() { return new Date().toTimeString().slice(0, 5); }
 
     function preencherDoseSugerida() {
       const medId = document.getElementById('regMedId').value;
       const kid = getFilhoAtivo();
-      if (!medId || !kid) {
-        document.getElementById('regDose').value = '';
-        return;
-      }
-      const med = state.meds.find(m => m.id === medId);
-      if (med) {
-        document.getElementById('regDose').value = calcularDoseParaFilho(med, kid.peso);
-      }
+      if (!medId) { document.getElementById('regDose').value = ''; return; }
+      const med = estado.meds.find(m => m.id === medId);
+      if (med) document.getElementById('regDose').value = calcularDoseParaFilho(med, kid.peso);
     }
 
     function usarMedRapido(medId) {
@@ -1028,7 +959,6 @@
       document.getElementById('regMedId').value = medId;
       preencherDoseSugerida();
       document.getElementById('regTemp').focus();
-      mostrarToast('👇 Confira a temperatura e clique em Salvar');
     }
 
     function criarRegistroInterno() {
@@ -1039,243 +969,143 @@
       const dose = document.getElementById('regDose').value.trim();
       const obs = document.getElementById('regObs').value.trim();
 
-      if (!temp && !medId) {
-        mostrarToast('⚠️ Informe a temperatura ou o medicamento');
-        return null;
-      }
+      if (!temp && !medId) { mostrarToast('Informe temp ou remédio'); return null; }
 
-      const med = state.meds.find(m => m.id === medId);
-      const agora = new Date();
-      const [hh, mm] = hora.split(':').map(Number);
-      const dataReg = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), hh, mm, 0);
+      const med = estado.meds.find(m => m.id === medId);
+      const [h, m] = hora.split(':').map(Number);
+      const d = new Date(); d.setHours(h, m, 0, 0);
 
-      const novoLog = {
+      const novo = {
         id: 'log_' + Date.now(),
-        kidId: kid.id,
         kidNome: kid.nome,
         kidPeso: kid.peso,
-        parent: state.parentAtivo,
+        parent: estado.parentAtivo,
         hora,
-        dataStr: agora.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
-        timestamp: dataReg.getTime(),
+        dataStr: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+        timestamp: d.getTime(),
         temp: temp ? parseFloat(temp).toFixed(1) : '',
-        medId: med ? med.id : '',
         medNome: med ? med.nome : '',
-        intervalo: med ? med.intervalo : 0,
-        fatorPorKg: med ? med.fatorPorKg : 1,
-        unidade: med ? med.unidade : 'gotas',
         dose,
         obs
       };
 
-      state.logs.unshift(novoLog);
-      salvarEstado();
-
+      estado.logs.unshift(novo);
+      salvarNoAparelho();
       document.getElementById('regTemp').value = '';
       document.getElementById('regObs').value = '';
-      return novoLog;
+      return novo;
     }
 
     document.getElementById('formRegistro').addEventListener('submit', (e) => {
       e.preventDefault();
-      const reg = criarRegistroInterno();
-      if (reg) mostrarToast('✅ Registro salvo!');
+      if (criarRegistroInterno()) mostrarToast('Salvo!');
     });
 
     function salvarEEnviarWhats() {
       const reg = criarRegistroInterno();
-      if (!reg) return;
-      enviarLogWhatsApp(reg);
+      if (reg) enviarRelatorioWhatsApp();
     }
 
-    function enviarLogWhatsApp(reg) {
-      let proxTexto = 'Sem medicação (apenas aferição)';
-      if (reg.medNome && reg.intervalo) {
-        const proxData = new Date(reg.timestamp + reg.intervalo * 3600 * 1000);
-        const horaProx = proxData.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-        proxTexto = `*${horaProx}* (intervalo de ${reg.intervalo}h)`;
+    function formatarMoeda(val) { return val; }
+
+    function enviarRelatorioWhatsApp() {
+      const kid = getFilhoAtivo();
+      const logsKid = estado.logs.filter(l => l.kidNome === kid.nome).slice(0, 5);
+
+      let texto = `🌡️ *RELATÓRIO • ${kid.nome.toUpperCase()}* (${kid.peso} kg)\n\n`;
+      if (logsKid.length === 0) {
+        texto += `Nenhum registro recente.\n`;
+      } else {
+        logsKid.forEach(l => {
+          texto += `• *${l.hora}* (${l.dataStr}) - Por: *${l.parent}*\n`;
+          if (l.temp) texto + `  🌡️ Temp: \`${l.temp}°C\`\n`;
+          if (l.medNome) texto += `  💊 Med: ${l.medNome} (${l.dose})\n`;
+          if (l.obs) texto += `  📝 \`${l.obs}\`\n`;
+        });
       }
 
-      const kidsToken = state.kids.map(k => `${toToken(k.nome)}-${k.peso}`).join('_');
-      const baseUrl = window.location.origin + window.location.pathname;
+      window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, '_blank');
+    }
 
-      const partesUrl = [
-        `s=4`,
-        `k=${kidsToken}`,
-        `c=${toToken(reg.kidNome)}`,
-        `w=${reg.kidPeso}`,
-        `p=${toToken(reg.parent)}`,
-        `h=${reg.hora.replace(':', '-')}`,
-        `dt=${(reg.dataStr || '').replace('/', '-')}`,
-        `t=${reg.temp || '0'}`,
-        `m=${toToken(reg.medNome || 'Nenhum')}`,
-        `i=${reg.intervalo || 0}`,
-        `f=${reg.fatorPorKg || 1}`,
-        `u=${toToken(reg.unidade || 'gotas')}`,
-        `d=${toToken(reg.dose || '0')}`,
-        `ts=${Math.floor(reg.timestamp / 1000)}`
-      ];
-
-      if (reg.obs) partesUrl.push(`o=${toToken(reg.obs)}`);
-
-      const linkInquebravel = `${baseUrl}?${partesUrl.join('&')}`;
-
-      const linhas = [
-        `🌡️ *Atualização: ${reg.kidNome}* (${reg.kidPeso} kg)`,
-        `👤 Registrado por: *${reg.parent}* às *${reg.hora}*`,
-        reg.temp ? `🌡️ Temperatura: *${reg.temp}°C*` : null,
-        reg.medNome ? `💊 Medicação: *${reg.medNome}*` : null,
-        reg.dose ? `💧 Dose dada: *${reg.dose}*` : null,
-        reg.obs ? `📝 Obs: _${reg.obs}_` : null,
-        `⏰ Próxima dose liberada às: ${proxTexto}`,
-        ``,
-        `📲 *Toque no link curto abaixo para sincronizar:*`,
-        linkInquebravel
-      ].filter(Boolean).join('\n');
-
-      const urlWhats = `https://wa.me/?text=${encodeURIComponent(linhas)}`;
-      window.open(urlWhats, '_blank');
+    function limparHistoricoFilho() {
+      const kid = getFilhoAtivo();
+      estado.logs = estado.logs.filter(l => l.kidNome !== kid.nome);
+      salvarNoAparelho();
+      mostrarToast('Histórico limpo');
     }
 
     function renderizarTudo() {
-      document.getElementById('btnPai').classList.toggle('active', state.parentAtivo === 'Wilson');
-      document.getElementById('btnMae').classList.toggle('active', state.parentAtivo === 'Rayssa');
-      
-      const statusGemini = document.getElementById('labelStatusGemini');
-      if (state.geminiKey) {
-        statusGemini.textContent = 'Ativa (IA pronta)';
-        statusGemini.style.color = 'var(--success)';
-      } else {
-        statusGemini.textContent = 'Não configurada (Opcional)';
-        statusGemini.style.color = 'var(--muted)';
-      }
+      document.getElementById('btnPai').classList.toggle('active', estado.parentAtivo === 'Wilson');
+      document.getElementById('btnMae').classList.toggle('active', estado.parentAtivo === 'Rayssa');
 
-      const kidAtivo = getFilhoAtivo();
-      document.getElementById('nomeFilhoAtivo').textContent = kidAtivo.nome;
-      document.getElementById('pesoFilhoAtivo').textContent = `${kidAtivo.peso} kg`;
-      document.getElementById('nomeFilhoHist').textContent = kidAtivo.nome;
+      const kid = getFilhoAtivo();
+      document.getElementById('nomeFilhoAtivo').textContent = kid.nome;
+      document.getElementById('pesoFilhoAtivo').textContent = `${kid.peso} kg`;
+      document.getElementById('nomeFilhoHist').textContent = kid.nome;
 
-      const kidsHtml = state.kids.map(k => `
-        <div class="kid-tab ${k.id === kidAtivo.id ? 'active' : ''}" onclick="selecionarFilho('${k.id}')">
+      document.getElementById('kidsContainer').innerHTML = estado.kids.map(k => `
+        <div class="kid-tab ${k.id === kid.id ? 'active' : ''}" onclick="selecionarFilho('${k.id}')">
           <div>
-            <div class="kid-name">${escapeHTML(k.nome)}</div>
+            <div class="kid-name">${k.nome}</div>
             <div class="kid-weight">⚖️ ${k.peso} kg</div>
           </div>
-          <button class="kid-edit-btn" onclick="event.stopPropagation(); abrirModalFilho('${k.id}')">✏️ Peso</button>
+          <button class="kid-edit-btn" onclick="event.stopPropagation(); abrirModalFilho('${k.id}')">✏️</button>
         </div>
       `).join('');
-      document.getElementById('kidsContainer').innerHTML = kidsHtml;
 
       const selectMed = document.getElementById('regMedId');
-      const selecaoAnterior = selectMed.value;
+      const valAnt = selectMed.value;
       selectMed.innerHTML = '<option value="">Apenas medir temp.</option>';
 
-      const medsHtml = state.meds.map(m => {
-        const doseCalculada = calcularDoseParaFilho(m, kidAtivo.peso);
-        const status = getStatusHorarioMed(m, kidAtivo);
-
+      document.getElementById('medsContainer').innerHTML = estado.meds.map(m => {
+        const dose = calcularDoseParaFilho(m, kid.peso);
+        const status = getStatusHorarioMed(m, kid);
         const opt = document.createElement('option');
-        opt.value = m.id;
-        opt.textContent = `${m.nome} (${doseCalculada})`;
+        opt.value = m.id; opt.textContent = `${m.nome} (${dose})`;
         selectMed.appendChild(opt);
 
         return `
           <div class="med-card">
             <div class="med-top">
               <div>
-                <div class="med-title">${escapeHTML(m.nome)}</div>
-                <div class="med-sub">Intervalo: de ${m.intervalo} em ${m.intervalo}h</div>
+                <div class="med-title">${m.nome}</div>
+                <div class="med-sub">Intervalo: ${m.intervalo}h</div>
               </div>
-              <button class="kid-edit-btn" onclick="removerMed('${m.id}')" title="Remover">✕</button>
+              <button class="btn btn-outline btn-sm" onclick="removerMed('${m.id}')">✕</button>
             </div>
             <div class="dose-highlight">
-              <span>Dose p/ ${kidAtivo.peso} kg: <strong>${doseCalculada}</strong></span>
+              <span>Dose: <strong>${dose}</strong></span>
               <button class="btn btn-primary btn-sm" onclick="usarMedRapido('${m.id}')">Dar Agora</button>
             </div>
-            <div>
-              <span class="timer-badge ${status.liberado ? 'timer-ok' : 'timer-wait'}">
-                ${status.texto}
-              </span>
-            </div>
+            <div><span class="timer-badge ${status.liberado ? 'timer-ok' : 'timer-wait'}">${status.texto}</span></div>
           </div>
         `;
       }).join('');
-      document.getElementById('medsContainer').innerHTML = medsHtml;
-      selectMed.value = selecaoAnterior;
+      selectMed.value = valAnt;
 
-      const logsFilho = state.logs.filter(l =>
-        toToken(l.kidNome).toLowerCase() === toToken(kidAtivo.nome).toLowerCase()
-      );
-
-      if (logsFilho.length === 0) {
-        document.getElementById('logsContainer').innerHTML = '<p style="text-align:center;color:var(--muted);font-size:0.85rem;padding:16px;">Nenhum registro para este filho ainda.</p>';
-      } else {
-        document.getElementById('logsContainer').innerHTML = logsFilho.map(l => {
-          const febreAlta = l.temp && parseFloat(l.temp) >= 37.8;
-          return `
-            <div class="log-item ${febreAlta ? 'high-fever' : ''}">
-              <div class="log-info">
-                <h4>
-                  ${l.hora} (${l.dataStr})
-                  ${l.temp ? `• 🌡️ ${l.temp}°C` : ''}
-                  ${l.medNome ? `• 💊 ${escapeHTML(l.medNome)}` : ''}
-                </h4>
-                <div class="log-meta">
-                  ${l.dose ? `<strong>Dose:</strong> ${escapeHTML(l.dose)} | ` : ''}
-                  <strong>Por:</strong> ${escapeHTML(l.parent)}
-                  ${l.obs ? `<br/><em>Obs: ${escapeHTML(l.obs)}</em>` : ''}
-                </div>
-              </div>
-              <button class="btn btn-outline btn-sm" onclick='enviarLogWhatsApp(${JSON.stringify(l).replace(/'/g, "&#39;")})'>📲 Whats</button>
+      const logsKid = estado.logs.filter(l => l.kidNome === kid.nome);
+      document.getElementById('logsContainer').innerHTML = logsKid.length === 0 ? 
+        '<p style="text-align:center;color:var(--text-muted);font-size:0.85rem;padding:16px;">Nenhum registro.</p>' :
+        logsKid.map(l => `
+          <div class="log-item ${l.temp && parseFloat(l.temp) >= 37.8 ? 'high-fever' : ''}">
+            <div class="log-info">
+              <h4>${l.hora} (${l.dataStr}) ${l.temp ? `• 🌡️ ${l.temp}°C` : ''} ${l.medNome ? `• 💊 ${l.medNome}` : ''}</h4>
+              <div class="log-meta">${l.dose ? `Dose: ${l.dose} | ` : ''}Por: ${l.parent} ${l.obs ? `<br/><em>${l.obs}</em>` : ''}</div>
             </div>
-          `;
-        }).join('');
-      }
+          </div>
+        `).join('');
     }
 
-    function limparHistoricoFilho() {
-      const kid = getFilhoAtivo();
-      state.logs = state.logs.filter(l => toToken(l.kidNome).toLowerCase() !== toToken(kid.nome).toLowerCase());
-      salvarEstado();
-      mostrarToast('🗑️ Histórico limpo');
-    }
-
-    function abrirModalConfig() {
-      document.getElementById('cfgGeminiKey').value = state.geminiKey || '';
-      document.getElementById('modalConfig').classList.add('active');
-    }
-
-    function salvarConfigGemini() {
-      state.geminiKey = document.getElementById('cfgGeminiKey').value.trim();
-      fecharModais();
-      salvarEstado();
-      mostrarToast('✅ Chave da IA salva com sucesso!');
-    }
-
-    function fecharModais() {
-      document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('active'));
-    }
-
-    function escapeHTML(str) {
-      return String(str || '').replace(/[&<>'"]/g, tag => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
-      }[tag]));
-    }
-
-    let toastTimer;
+    function fecharModais() { document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('active')); }
+    let toastT;
     function mostrarToast(msg) {
       const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.classList.add('show');
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+      t.textContent = msg; t.classList.add('show');
+      clearTimeout(toastT);
+      toastT = setTimeout(() => t.classList.remove('show'), 2600);
     }
 
-    // Inicialização
     document.getElementById('regHora').value = getHoraAtualStr();
-    receberSincronizacaoPeloLink();
-    renderizarTudo();
-    setInterval(renderizarTudo, 30000);
   </script>
 </body>
 </html>
