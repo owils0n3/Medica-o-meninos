@@ -52,21 +52,21 @@
       --radius-lg: 20px;
     }
 
-    /* Tema Rayssa (Roseado Suave) */
+    /* Tema Rayssa (Rosé Suave e Leve) */
     body.theme-rayssa {
-      --bg-primary: #FDF0F5;
-      --bg-glass: rgba(253, 240, 245, 0.88);
-      --bg-segmented: #F5DCE6;
-      --bg-card-inner: #FFF7FA;
+      --bg-primary: #FAF4F7;
+      --bg-glass: rgba(250, 244, 247, 0.88);
+      --bg-segmented: #F0E2E8;
+      --bg-card-inner: #FCF8FA;
       
-      --primary: #E03E7A;
-      --primary-gradient: linear-gradient(180deg, #EC4899 0%, #C82869 100%);
-      --primary-light: #FCE7F0;
-      --primary-dark: #9D174D;
-      --primary-shadow: rgba(224, 62, 122, 0.25);
-      --primary-border: rgba(224, 62, 122, 0.22);
+      --primary: #D65A88;
+      --primary-gradient: linear-gradient(180deg, #E06C96 0%, #C44574 100%);
+      --primary-light: #F7EBF0;
+      --primary-dark: #8E2C51;
+      --primary-shadow: rgba(214, 90, 136, 0.22);
+      --primary-border: rgba(214, 90, 136, 0.2);
 
-      --border-strong: #DFC5D0;
+      --border-strong: #E2CEC5;
     }
 
     * {
@@ -126,7 +126,6 @@
       margin: 0 auto;
     }
 
-    /* Nova barra superior estilo iOS limpa */
     .nav-bar {
       display: flex;
       justify-content: space-between;
@@ -155,7 +154,6 @@
       color: var(--text-primary);
     }
 
-    /* Chave seletora estilo iOS minimalista */
     .ios-segmented-control {
       display: flex;
       background: var(--bg-segmented);
@@ -595,19 +593,16 @@
     <header>
       <div class="app-shell">
         <div class="nav-bar">
-          <!-- Título e Subtítulo limpos -->
           <div class="brand-group">
             <span class="brand-subtitle" id="labelResponsavelTopo">Modo • Wilson</span>
             <div class="brand-title">Rocha Batista</div>
           </div>
 
-          <!-- Chave Seletora Estilo iOS (Sem emojis) -->
           <div class="ios-segmented-control">
             <button type="button" id="btnPai" class="ios-segment-btn active" onclick="setParent('Wilson')">Wilson</button>
             <button type="button" id="btnMae" class="ios-segment-btn" onclick="setParent('Rayssa')">Rayssa</button>
           </div>
 
-          <!-- Ações Rápidas (Relatório antes, Engrenagem de Configuração depois) -->
           <div class="nav-actions">
             <button class="btn-icon-ios" onclick="enviarRelatorioWhatsApp()" title="Enviar Relatório no WhatsApp">📄</button>
             <button class="btn-icon-ios" onclick="abrirConfigIA()" title="Configuração IA">⚙️</button>
@@ -1088,7 +1083,7 @@
 
       const metaTheme = document.getElementById('metaThemeColor');
       if (metaTheme) {
-        metaTheme.setAttribute('content', isRayssa ? '#FDF0F5' : '#EAF4FE');
+        metaTheme.setAttribute('content', isRayssa ? '#FAF4F7' : '#EAF4FE');
       }
     }
 
