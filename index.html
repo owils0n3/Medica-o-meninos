@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Rocha Batista</title>
+  <title>Rocha Batista • Saúde Infantil</title>
 
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -33,6 +33,8 @@
       --warning-bg: #FFF4E5;
       --danger: #FF3B30;
       --danger-bg: #FFF1F0;
+      --purple: #AF52DE;
+      --purple-bg: #F6EDFC;
       
       --text-primary: #1C1C1E;
       --text-secondary: #636366;
@@ -62,7 +64,6 @@
       padding-bottom: 70px;
     }
 
-    /* Tela de Carregamento Invisível */
     #loadingScreen {
       position: fixed;
       inset: 0;
@@ -313,12 +314,60 @@
     }
 
     @media (max-width: 620px) {
-      .grid-3 {
+      .grid-3, .grid-2 {
         grid-template-columns: 1fr;
       }
-      .grid-2 {
-        grid-template-columns: 1fr;
-      }
+    }
+
+    /* Seletor Rápido de Sintomas */
+    .symptom-Scroll {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .symptom-chip {
+      background: var(--bg-primary);
+      border: 1.5px solid var(--border-strong);
+      border-radius: 99px;
+      padding: 7px 13px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+
+    .symptom-chip.active {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary-dark);
+    }
+
+    .quick-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .tag-btn {
+      background: var(--bg-segmented);
+      border: none;
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
+    .tag-btn:active {
+      background: var(--border-strong);
     }
 
     .btn {
@@ -380,8 +429,9 @@
     }
 
     .med-sub {
-      font-size: 0.78rem;
-      color: var(--text-muted);
+      font-size: 0.76rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
     }
 
     .dose-highlight {
@@ -427,6 +477,16 @@
       background: var(--danger-bg);
     }
 
+    .log-item.gastro-alert {
+      border-left-color: var(--warning);
+      background: var(--warning-bg);
+    }
+
+    .log-item.resp-alert {
+      border-left-color: var(--purple);
+      background: var(--purple-bg);
+    }
+
     .log-info h4 {
       font-size: 0.92rem;
       margin-bottom: 4px;
@@ -457,7 +517,7 @@
     .modal-sheet {
       background: var(--bg-elevated);
       border-radius: var(--radius-lg);
-      max-width: 460px;
+      max-width: 480px;
       width: 100%;
       padding: 22px;
       max-height: 90vh;
@@ -472,11 +532,11 @@
       background: var(--success-bg);
       border: 0.5px solid rgba(52, 199, 89, 0.3);
       border-radius: 10px;
-      padding: 10px;
+      padding: 10px 12px;
       margin-bottom: 12px;
-      font-size: 0.8rem;
+      font-size: 0.79rem;
       color: #1B5E20;
-      line-height: 1.4;
+      line-height: 1.45;
     }
 
     #toast {
@@ -511,13 +571,12 @@
       <div class="app-shell">
         <div class="nav-bar">
           <div class="brand-title">
-            <span>Família</span>
+            <span>Saúde Infantil</span>
             <h1>Rocha Batista</h1>
           </div>
           <div class="nav-actions">
-            <!-- Botão Configurar Token / IA substituído por IA Apenas -->
             <button class="btn-ios btn-ios-secondary" onclick="abrirConfigIA()" title="Configurar IA">🤖 Config. IA</button>
-            <button class="btn-ios btn-ios-secondary" onclick="enviarRelatorioWhatsApp()" title="Enviar relatório para Rayssa">📄 Relatório</button>
+            <button class="btn-ios btn-ios-secondary" onclick="enviarRelatorioWhatsApp()" title="Enviar relatório no WhatsApp">📄 Relatório</button>
             <div class="parent-toggle">
               <button type="button" id="btnPai" class="parent-btn active" onclick="setParent('Wilson')">Wilson</button>
               <button type="button" id="btnMae" class="parent-btn" onclick="setParent('Rayssa')">Rayssa</button>
@@ -545,16 +604,29 @@
           <button class="btn btn-primary btn-sm" onclick="abrirModalMed()">+ Novo Remédio</button>
         </div>
         <p style="font-size:0.78rem; color:var(--text-secondary); margin-bottom:12px;">
-          Doses calculadas automaticamente para <strong id="pesoFilhoAtivo">0 kg</strong>.
+          Doses de segurança calculadas para <strong id="pesoFilhoAtivo">0 kg</strong>.
         </p>
         <div id="medsContainer" class="med-list"></div>
       </div>
 
-      <!-- 3. REGISTRAR FEBRE OU MEDICAÇÃO -->
+      <!-- 3. REGISTRAR SINTOMA, CUIDADO OU MEDICAÇÃO -->
       <div class="ios-card">
         <div class="card-header">
-          <span class="card-title">📝 Registrar Febre / Dose Dada</span>
+          <span class="card-title">📝 Registrar Sintoma / Medicação</span>
         </div>
+
+        <label>O que está acontecendo?</label>
+        <div class="symptom-Scroll" id="symptomBar">
+          <button type="button" class="symptom-chip active" onclick="selecionarSintoma('🌡️ Febre')">🌡️ Febre</button>
+          <button type="button" class="symptom-chip" onclick="selecionarSintoma('🤧 Tosse / Coriza')">🤧 Tosse / Coriza</button>
+          <button type="button" class="symptom-chip" onclick="selecionarSintoma('🤮 Vômito / Enjoo')">🤮 Vômito / Enjoo</button>
+          <button type="button" class="symptom-chip" onclick="selecionarSintoma('💩 Diarreia')">💩 Diarreia</button>
+          <button type="button" class="symptom-chip" onclick="selecionarSintoma('💧 Lavagem Nasal')">💧 Lavagem Nasal</button>
+          <button type="button" class="symptom-chip" onclick="selecionarSintoma('😣 Dor / Cólica')">😣 Dor / Cólica</button>
+          <button type="button" class="symptom-chip" onclick="selecionarSintoma('🔴 Alergia / Pele')">🔴 Alergia / Pele</button>
+          <button type="button" class="symptom-chip" onclick="selecionarSintoma('💊 Rotina / Medicação')">💊 Só Medicação</button>
+        </div>
+
         <form id="formRegistro">
           <div class="grid-3 form-group">
             <div>
@@ -562,13 +634,13 @@
               <input type="time" id="regHora" required />
             </div>
             <div>
-              <label>Temperatura (°C)</label>
-              <input type="number" step="0.1" id="regTemp" placeholder="Ex: 38.5" inputmode="decimal" />
+              <label>Temperatura (°C - Opcional)</label>
+              <input type="number" step="0.1" id="regTemp" placeholder="Ex: 37.8" inputmode="decimal" />
             </div>
             <div>
-              <label>Medicamento</label>
+              <label>Medicamento / Cuidado</label>
               <select id="regMedId" onchange="preencherDoseSugerida()">
-                <option value="">Apenas medir temp.</option>
+                <option value="">Nenhum / Apenas Sintoma</option>
               </select>
             </div>
           </div>
@@ -576,15 +648,16 @@
           <div class="grid-2 form-group">
             <div>
               <label>Dose Administrada</label>
-              <input type="text" id="regDose" placeholder="Ex: 14 gotas ou 5 mL" />
+              <input type="text" id="regDose" placeholder="Ex: 18 gotas, 5 mL, Soro..." />
             </div>
             <div>
-              <label>Observação rápida</label>
-              <input type="text" id="regObs" placeholder="Ex: Banho morno..." />
+              <label>Observação / Evolução</label>
+              <input type="text" id="regObs" placeholder="Toque nas tags abaixo ou digite..." />
+              <div id="quickTagsContainer" class="quick-tags"></div>
             </div>
           </div>
 
-          <div class="grid-2" style="margin-top: 10px;">
+          <div class="grid-2" style="margin-top: 12px;">
             <button type="submit" class="btn btn-primary">✅ Só Salvar</button>
             <button type="button" class="btn btn-whatsapp" onclick="salvarEEnviarWhats()">📲 Salvar e Enviar Whats</button>
           </div>
@@ -594,7 +667,7 @@
       <!-- 4. HISTÓRICO -->
       <div class="ios-card">
         <div class="card-header">
-          <span class="card-title">🕒 Histórico de <span id="nomeFilhoHist">...</span></span>
+          <span class="card-title">🕒 Histórico Clínico de <span id="nomeFilhoHist">...</span></span>
           <button class="btn btn-danger btn-sm" onclick="limparHistoricoFilho()">Limpar Histórico</button>
         </div>
         <div id="logsContainer"></div>
@@ -624,16 +697,24 @@
     </div>
   </div>
 
-  <!-- MODAL: MEDICAMENTO -->
+  <!-- MODAL: MEDICAMENTO COM CATÁLOGO PEDIÁTRICO VERIFICADO -->
   <div id="modalMed" class="modal-backdrop">
     <div class="modal-sheet">
-      <h3>💊 Novo Medicamento</h3>
-      <div class="form-group">
-        <label>Nome do Remédio *</label>
-        <input type="text" id="medNome" placeholder="Ex: Dipirona, Ibuprofeno..." />
+      <h3>💊 Adicionar Medicamento</h3>
+
+      <div class="form-group" style="background: var(--primary-light); padding: 12px; border-radius: 12px; border: 1px solid rgba(10, 132, 255, 0.25);">
+        <label style="color: var(--primary-dark);">⚡ Catálogo Pediátrico Seguro (Preenchimento Automático)</label>
+        <select id="catalogoRapido" onchange="selecionarDoCatalogo()" style="background: #FFFFFF;">
+          <option value="">-- Escolha um remédio da base segura ou digite abaixo --</option>
+        </select>
       </div>
 
-      <div class="grid-2 form-group">
+      <div class="form-group">
+        <label>Nome e Apresentação do Remédio *</label>
+        <input type="text" id="medNome" placeholder="Ex: Ibuprofeno Gotas 100mg/mL..." />
+      </div>
+
+      <div class="grid-3 form-group">
         <div>
           <label>mg no Frasco *</label>
           <input type="number" step="0.1" id="medMg" placeholder="Ex: 500" inputmode="decimal" oninput="recalcularConversaoBula()" />
@@ -641,57 +722,72 @@
         <div>
           <label>Base (mL)</label>
           <select id="medMlBase" onchange="recalcularConversaoBula()">
-            <option value="1">1 mL (Gotas)</option>
-            <option value="5">5 mL (Xarope)</option>
+            <option value="1">1 mL (Gotas/Sol.)</option>
+            <option value="5">5 mL (Xarope/Susp.)</option>
+          </select>
+        </div>
+        <div>
+          <label>Gotas por mL</label>
+          <select id="medGotasPorMl" onchange="recalcularConversaoBula()">
+            <option value="20">20 gotas/mL (Padrão)</option>
+            <option value="10">10 gotas/mL (Alivium/Ibuprofeno)</option>
+            <option value="15">15 gotas/mL (Tylenol/Paracetamol)</option>
+            <option value="30">30 gotas/mL (Simeticona/Luftal)</option>
           </select>
         </div>
       </div>
 
       <div class="form-group">
-        <button type="button" class="btn btn-success" onclick="buscarBulaOnline()">🔍 Buscar Posologia (Local + IA Gemini)</button>
+        <button type="button" class="btn btn-success" onclick="buscarBulaOnline()">🔍 Buscar pelo Nome (Base Local + IA Gemini)</button>
       </div>
 
       <div id="bulaResultadoBox" class="bula-box" style="display:none;"></div>
 
       <div class="grid-2 form-group">
         <div>
-          <label>Apresentação</label>
+          <label>Unidade da Dose</label>
           <select id="medUnidade" onchange="recalcularConversaoBula()">
             <option value="gotas">Gotas</option>
             <option value="mL">mL</option>
           </select>
         </div>
         <div>
-          <label>Intervalo (Horas) *</label>
+          <label>Intervalo Mínimo *</label>
           <select id="medIntervalo">
             <option value="4">4 em 4h</option>
             <option value="6" selected>6 em 6h</option>
             <option value="8">8 em 8h</option>
             <option value="12">12 em 12h</option>
-            <option value="24">24h</option>
+            <option value="24">24 em 24h (1x/dia)</option>
           </select>
         </div>
       </div>
 
       <div class="grid-2 form-group">
         <div>
-          <label>mg por kg (Bula)</label>
-          <input type="number" step="0.1" id="medMgPorKg" placeholder="Ex: 20" inputmode="decimal" oninput="recalcularConversaoBula()" />
+          <label>Dose Bula (mg por kg)</label>
+          <input type="number" step="0.01" id="medMgPorKg" placeholder="Ex: 20" inputmode="decimal" oninput="recalcularConversaoBula()" />
         </div>
         <div>
-          <label>Fator Final *</label>
+          <label>Fator Final (gotas ou mL / kg) *</label>
           <input type="number" step="0.01" id="medFatorPorKg" placeholder="Ex: 0.8" inputmode="decimal" />
         </div>
       </div>
 
-      <div class="form-group">
-        <label>Dose Máxima por Tomada</label>
-        <input type="number" step="1" id="medMaxDose" placeholder="Ex: 40" inputmode="numeric" />
+      <div class="grid-2 form-group">
+        <div>
+          <label>Teto Máximo por Dose</label>
+          <input type="number" step="0.5" id="medMaxDose" placeholder="Ex: 40" inputmode="decimal" />
+        </div>
+        <div>
+          <label>Indicação / Nota Curta</label>
+          <input type="text" id="medNota" placeholder="Ex: Febre e dor" />
+        </div>
       </div>
 
       <div style="display:flex; gap:10px; margin-top:16px;">
         <button class="btn btn-outline" onclick="fecharModais()">Cancelar</button>
-        <button class="btn btn-primary" onclick="salvarMedicamento()">Salvar</button>
+        <button class="btn btn-primary" onclick="salvarMedicamento()">Salvar na Farmacinha</button>
       </div>
     </div>
   </div>
@@ -700,14 +796,14 @@
   <div id="modalConfigIA" class="modal-backdrop" onclick="if(event.target.id==='modalConfigIA') fecharConfigIA()">
     <div class="modal-sheet">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-        <h3>Configuração IA</h3>
+        <h3>Configuração IA Gemini</h3>
         <button class="btn btn-outline btn-sm" onclick="fecharConfigIA()">✕</button>
       </div>
       <div class="form-group" style="margin-top: 12px;">
         <label>Chave API do Gemini (Google AI Studio)</label>
         <input type="password" id="inputGeminiKey" placeholder="AIzaSy..." />
         <small style="color:var(--text-secondary); font-size:0.75rem; display:block; margin-top:4px;">
-          Permite consultar posologias e bulas raras automaticamente na internet.
+          Opcional: Consulta posologias de medicamentos específicos fora do catálogo padrão.
         </small>
       </div>
       <div class="modal-footer" style="margin-top: 16px;">
@@ -720,7 +816,175 @@
 
   <script>
     // -----------------------------------------------------
-    // 1. CONFIGURAÇÃO E INICIALIZAÇÃO DO FIREBASE
+    // 1. BASE DE BULAS PEDIÁTRICAS VERIFICADAS (SBP / ANVISA)
+    // -----------------------------------------------------
+    const BASE_BULAS_BR = [
+      // FEBRE E DOR
+      {
+        idCat: 'dipirona_gotas_500',
+        categoria: '🌡️ Febre e Dor',
+        nome: 'Dipirona Gotas 500mg/mL',
+        termos: ['dipirona', 'novalgina', 'maxalgina'],
+        mg: 500, mlBase: 1, gotasPorMl: 20, unidade: 'gotas',
+        mgPorKg: 20, fatorPorKg: 0.8, intervalo: 6, maxDose: 40,
+        nota: 'Febre e dor (20 mg/kg/dose = 0,8 gota/kg). Teto pediátrico: 40 gotas/dose.'
+      },
+      {
+        idCat: 'dipirona_solucao_50',
+        categoria: '🌡️ Febre e Dor',
+        nome: 'Dipirona Solução 50mg/mL (Novalgina Infantil)',
+        termos: ['novalgina xarope', 'dipirona xarope', 'dipirona solucao'],
+        mg: 50, mlBase: 1, gotasPorMl: 20, unidade: 'mL',
+        mgPorKg: 20, fatorPorKg: 0.4, intervalo: 6, maxDose: 15,
+        nota: 'Febre e dor (20 mg/kg/dose = 0,4 mL/kg). Acompanha seringa dosadora.'
+      },
+      {
+        idCat: 'ibuprofeno_gotas_100',
+        categoria: '🌡️ Febre e Dor',
+        nome: 'Ibuprofeno Gotas 100mg/mL (Alivium Forte)',
+        termos: ['ibuprofeno 100', 'alivium 100', 'ibuprofeno', 'alivium', 'dalsy'],
+        mg: 100, mlBase: 1, gotasPorMl: 10, unidade: 'gotas',
+        mgPorKg: 10, fatorPorKg: 1.0, intervalo: 8, maxDose: 40,
+        nota: 'ATENÇÃO: 1 mL = 10 gotas (10 mg/gota). Dose segura: 1 gota/kg (10 mg/kg) a cada 6h a 8h. Teto: 40 gotas.'
+      },
+      {
+        idCat: 'ibuprofeno_gotas_50',
+        categoria: '🌡️ Febre e Dor',
+        nome: 'Ibuprofeno Gotas 50mg/mL (Alivium 50)',
+        termos: ['ibuprofeno 50', 'alivium 50'],
+        mg: 50, mlBase: 1, gotasPorMl: 10, unidade: 'gotas',
+        mgPorKg: 10, fatorPorKg: 2.0, intervalo: 8, maxDose: 40,
+        nota: 'Apresentação de 50mg/mL (5 mg/gota): 1 a 2 gotas/kg a cada 6h a 8h.'
+      },
+      {
+        idCat: 'paracetamol_gotas_200',
+        categoria: '🌡️ Febre e Dor',
+        nome: 'Paracetamol Gotas 200mg/mL (Tylenol Gotas)',
+        termos: ['paracetamol', 'tylenol'],
+        mg: 200, mlBase: 1, gotasPorMl: 15, unidade: 'gotas',
+        mgPorKg: 13.3, fatorPorKg: 1.0, intervalo: 6, maxDose: 35,
+        nota: 'Bula Tylenol: 1 mL = 15 gotas (~13,3 mg/gota). Dose segura: 1 gota/kg a cada 6h. Teto: 35 gotas/dose.'
+      },
+      {
+        idCat: 'paracetamol_bebe_100',
+        categoria: '🌡️ Febre e Dor',
+        nome: 'Paracetamol Bebê 100mg/mL (Tylenol Bebê)',
+        termos: ['tylenol bebe', 'paracetamol bebe', 'paracetamol 100'],
+        mg: 100, mlBase: 1, gotasPorMl: 20, unidade: 'mL',
+        mgPorKg: 12, fatorPorKg: 0.12, intervalo: 6, maxDose: 5,
+        nota: 'Suspensão 100mg/mL: 0,12 mL por kg a cada 6h.'
+      },
+
+      // VÔMITO, ENJOO, GASES E DIARREIA
+      {
+        idCat: 'ondansetrona_4mg',
+        categoria: '🤮 Vômito, Gases e Intestino',
+        nome: 'Ondansetrona 4mg Comp. Orodispersível (Vonau)',
+        termos: ['vonau', 'ondansetrona', 'nausedron'],
+        mg: 4, mlBase: 1, gotasPorMl: 20, unidade: 'mL',
+        mgPorKg: 0.15, fatorPorKg: 0.04, intervalo: 8, maxDose: 4,
+        nota: 'Antiemético (0,15 mg/kg): De 8 a 15 kg = Meio comprimido (2 mg); De 15 a 30 kg = 1 comprimido (4 mg) que derrete na língua a cada 8h.'
+      },
+      {
+        idCat: 'simeticona_gotas_75',
+        categoria: '🤮 Vômito, Gases e Intestino',
+        nome: 'Simeticona Gotas 75mg/mL (Luftal)',
+        termos: ['simeticona', 'luftal', 'flagass'],
+        mg: 75, mlBase: 1, gotasPorMl: 30, unidade: 'gotas',
+        mgPorKg: 1.5, fatorPorKg: 0.6, intervalo: 8, maxDose: 15,
+        nota: 'Gases e cólica abdominal (~0,6 gota/kg): Lactentes 4 a 6 gotas; Crianças 6 a 12 gotas (máx 15 gotas) de 8/8h.'
+      },
+      {
+        idCat: 'zinco_xarope_4',
+        categoria: '🤮 Vômito, Gases e Intestino',
+        nome: 'Sulfato de Zinco Xarope 4mg/mL (Diarreia)',
+        termos: ['zinco', 'sulfato de zinco', 'unizinco'],
+        mg: 4, mlBase: 1, gotasPorMl: 20, unidade: 'mL',
+        mgPorKg: 2.0, fatorPorKg: 0.5, intervalo: 24, maxDose: 5,
+        nota: 'Protocolo OMS Diarreia Aguda (> 6 meses): Dose fixa de 5 mL (20 mg) 1x ao dia durante 10 a 14 dias.'
+      },
+
+      // TOSSE, CORIZA E ALERGIA
+      {
+        idCat: 'desloratadina_xarope',
+        categoria: '🤧 Tosse, Coriza e Alergia',
+        nome: 'Desloratadina Xarope 0,5mg/mL (Desalex / Esalerg)',
+        termos: ['desloratadina', 'desalex', 'esalerg'],
+        mg: 0.5, mlBase: 1, gotasPorMl: 20, unidade: 'mL',
+        mgPorKg: 0.1, fatorPorKg: 0.2, intervalo: 24, maxDose: 2.5,
+        nota: 'Antialérgico (não dá sono). Crianças de 1 a 5 anos: Dose padrão de 2,5 mL 1x ao dia (6 a 11 anos: 5 mL).'
+      },
+      {
+        idCat: 'loratadina_xarope',
+        categoria: '🤧 Tosse, Coriza e Alergia',
+        nome: 'Loratadina Xarope 1mg/mL (Claritin)',
+        termos: ['loratadina', 'claritin', 'histadin'],
+        mg: 1, mlBase: 1, gotasPorMl: 20, unidade: 'mL',
+        mgPorKg: 0.2, fatorPorKg: 0.25, intervalo: 24, maxDose: 5,
+        nota: 'Antialérgico (> 2 anos e abaixo de 30 kg): Dose padrão de 5 mL 1x ao dia.'
+      },
+      {
+        idCat: 'dexclorfeniramina_sol',
+        categoria: '🤧 Tosse, Coriza e Alergia',
+        nome: 'Dexclorfeniramina Solução 0,4mg/mL (Polaramine)',
+        termos: ['polaramine', 'dexclorfeniramina', 'histamin'],
+        mg: 2, mlBase: 5, gotasPorMl: 20, unidade: 'mL',
+        mgPorKg: 0.05, fatorPorKg: 0.12, intervalo: 8, maxDose: 2.5,
+        nota: 'Antialérgico (> 2 anos): ~0,12 mL/kg por dose de 8/8h (Teto de 2,5 mL por dose entre 2 e 6 anos).'
+      },
+      {
+        idCat: 'prednisolona_sol_3',
+        categoria: '🤧 Tosse, Coriza e Alergia',
+        nome: 'Prednisolona Solução 3mg/mL (Prelone / Predsim)',
+        termos: ['prednisolona', 'prelone', 'predsim'],
+        mg: 3, mlBase: 1, gotasPorMl: 20, unidade: 'mL',
+        mgPorKg: 1.0, fatorPorKg: 0.33, intervalo: 24, maxDose: 15,
+        nota: 'Corticoide (1 mg/kg/dia = 0,33 mL/kg): Tomar pela manhã (sob orientação médica).'
+      },
+      {
+        idCat: 'acebrofilina_ped_5',
+        categoria: '🤧 Tosse, Coriza e Alergia',
+        nome: 'Acebrofilina Pediátrica 25mg/5mL (Brondilat)',
+        termos: ['acebrofilina', 'brondilat', 'filinar'],
+        mg: 25, mlBase: 5, gotasPorMl: 20, unidade: 'mL',
+        mgPorKg: 1.0, fatorPorKg: 0.2, intervalo: 12, maxDose: 5,
+        nota: 'Tosse produtiva/catarro (> 2 anos): 1 mg/kg/dose (0,2 mL/kg) de 12/12h. Teto de 5 mL (2 a 6 anos).'
+      },
+
+      // ANTIBIÓTICOS (USO COM RECEITA)
+      {
+        idCat: 'amoxicilina_250',
+        categoria: '🦠 Antibióticos (Com Receita)',
+        nome: 'Amoxicilina Suspensão 250mg/5mL (8/8h)',
+        termos: ['amoxicilina', 'amoxil', 'clavulin'],
+        mg: 250, mlBase: 5, gotasPorMl: 20, unidade: 'mL',
+        mgPorKg: 16.6, fatorPorKg: 0.33, intervalo: 8, maxDose: 10,
+        nota: 'Dose padrão (50 mg/kg/dia dividido de 8/8h): 0,33 mL/kg por tomada a cada 8 horas.'
+      },
+      {
+        idCat: 'amoxicilina_400',
+        categoria: '🦠 Antibióticos (Com Receita)',
+        nome: 'Amoxicilina Suspensão 400mg/5mL (12/12h)',
+        termos: ['amoxicilina 400', 'amoxil bd', 'clavulin bd'],
+        mg: 400, mlBase: 5, gotasPorMl: 20, unidade: 'mL',
+        mgPorKg: 22.5, fatorPorKg: 0.28, intervalo: 12, maxDose: 10,
+        nota: 'Apresentação BD (45 mg/kg/dia dividido de 12/12h): 0,28 mL/kg por tomada a cada 12 horas.'
+      }
+    ];
+
+    const TAGS_POR_SINTOMA = {
+      '🌡️ Febre': ['Banho morno', 'Compressa fresca', 'Prostrado/Molinho', 'Febre cedeu', 'Tremores/Calafrio'],
+      '🤧 Tosse / Coriza': ['Tosse seca', 'Tosse carregada', 'Nariz trancado', 'Espirros', 'Chiado no peito'],
+      '🤮 Vômito / Enjoo': ['Vomitou comida', 'Aceitou soro aos poucos', 'Rejeitou líquidos', 'Náusea'],
+      '💩 Diarreia': ['Evacuação líquida', 'Pastosa', 'Tomou Soro Oral (SRO)', 'Tomou Probiótico'],
+      '💧 Lavagem Nasal': ['Soro 0,9% (5mL/narina)', 'Soro 0,9% (10mL/narina)', 'Saiu muita secreção', 'Inalação c/ Soro'],
+      '😣 Dor / Cólica': ['Dor de garganta', 'Dor de ouvido', 'Dor de barriga/Gases', 'Choro intenso'],
+      '🔴 Alergia / Pele': ['Manchinhas vermelhas', 'Coceira', 'Picada de inseto', 'Olhos inchados'],
+      '💊 Rotina / Medicação': ['Tomou direitinho', 'Cuspiu um pouco', 'Dormiu após dose']
+    };
+
+    // -----------------------------------------------------
+    // 2. CONFIGURAÇÃO E INICIALIZAÇÃO DO FIREBASE
     // -----------------------------------------------------
     const firebaseConfig = {
       apiKey: "AIzaSyD7vdvBDk6k48AlRDQpdrhOxG212MovmrM",
@@ -736,15 +1000,15 @@
     const auth = firebase.auth();
     const db = firebase.database();
     
-    // Credenciais Invisíveis
     const DEFAULT_EMAIL = "rochabatista@wilson.com";
     const DEFAULT_PASS = "wrzt01";
 
     let userId = null;
     let isSyncing = false; 
     let dbListener = null;
+    let sintomaSelecionado = '🌡️ Febre';
 
-    const STORAGE_KEY = 'rocha_batista_febre_v4';
+    const STORAGE_KEY = 'rocha_batista_febre_v5';
     const SYNC_CONFIG_KEY = 'rocha_batista_ia_config_v4';
 
     let estado = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
@@ -755,21 +1019,46 @@
         { id: 'kid2', nome: 'Tito', peso: 10.0 }
       ],
       meds: [
-        { id: 'm1', nome: 'Dipirona Gotas', mg: 500, mlBase: 1, unidade: 'gotas', intervalo: 6, mgPorKg: 20, fatorPorKg: 0.8, maxDose: 40 },
-        { id: 'm2', nome: 'Ibuprofeno Gotas', mg: 100, mlBase: 1, unidade: 'gotas', intervalo: 8, mgPorKg: 10, fatorPorKg: 2.0, maxDose: 40 }
+        { id: 'm1', nome: 'Dipirona Gotas 500mg/mL', mg: 500, mlBase: 1, gotasPorMl: 20, unidade: 'gotas', intervalo: 6, mgPorKg: 20, fatorPorKg: 0.8, maxDose: 40, nota: 'Febre e dor (0,8 gota/kg)' },
+        { id: 'm2', nome: 'Ibuprofeno Gotas 100mg/mL', mg: 100, mlBase: 1, gotasPorMl: 10, unidade: 'gotas', intervalo: 8, mgPorKg: 10, fatorPorKg: 1.0, maxDose: 40, nota: 'Febre e inflamação (1 gota/kg)' },
+        { id: 'm3', nome: 'Paracetamol Gotas 200mg/mL', mg: 200, mlBase: 1, gotasPorMl: 15, unidade: 'gotas', intervalo: 6, mgPorKg: 13.3, fatorPorKg: 1.0, maxDose: 35, nota: 'Febre e dor (1 gota/kg)' },
+        { id: 'm4', nome: 'Desloratadina Xarope 0,5mg/mL', mg: 0.5, mlBase: 1, gotasPorMl: 20, unidade: 'mL', intervalo: 24, mgPorKg: 0.1, fatorPorKg: 0.2, maxDose: 2.5, nota: 'Coriza e alergia (1 a 5 anos: 2,5 mL)' }
       ],
       logs: []
     };
 
     let iaConfig = JSON.parse(localStorage.getItem(SYNC_CONFIG_KEY)) || { geminiKey: '' };
 
+    // Garante correção de segurança caso o Ibuprofeno 100mg antigo esteja com fator 2.0
+    function auditarSegurancaMeds() {
+      let corrigido = false;
+      if (estado.meds && Array.isArray(estado.meds)) {
+        estado.meds.forEach(m => {
+          const nomeLow = (m.nome || '').toLowerCase();
+          if ((nomeLow.includes('ibuprofeno') || nomeLow.includes('alivium')) && Number(m.mg) === 100 && m.unidade === 'gotas' && Number(m.fatorPorKg) === 2) {
+            m.fatorPorKg = 1.0;
+            m.gotasPorMl = 10;
+            m.nota = 'Febre e inflamação (1 gota/kg na apresentação 100mg/mL)';
+            corrigido = true;
+          }
+        });
+      }
+      return corrigido;
+    }
+
+    auditarSegurancaMeds();
+    popularSelectCatalogo();
+    renderizarTagsRapidas();
+    renderizarTudo();
+
     // -----------------------------------------------------
-    // 2. AUTENTICAÇÃO INVISÍVEL
+    // 3. AUTENTICAÇÃO INVISÍVEL E SINCRONIZAÇÃO FIREBASE
     // -----------------------------------------------------
-    // Inicia o processo de login automático assim que a página abre
     auth.signInWithEmailAndPassword(DEFAULT_EMAIL, DEFAULT_PASS).catch(err => {
       console.error("Erro no login automático:", err.message);
-      mostrarToast("Erro de conexão ao banco de dados.");
+      mostrarToast("Modo Offline Ativo");
+      document.getElementById('loadingScreen').style.display = 'none';
+      document.getElementById('appContent').style.display = 'block';
     });
 
     auth.onAuthStateChanged(user => {
@@ -791,7 +1080,6 @@
         if (snapshot.exists()) {
           mesclarDadosNuvem(snapshot.val());
         } else {
-          // Se o banco estiver vazio (primeiro acesso), envia os dados locais iniciais
           enviarParaNuvem();
         }
         isSyncing = false;
@@ -809,45 +1097,107 @@
 
     function mesclarDadosNuvem(dadosNuvem) {
       if (!dadosNuvem) return;
-      
-      // Preserva o parentAtivo local (quem está segurando o aparelho)
       const paiAtual = estado.parentAtivo;
 
       if (dadosNuvem.kids) estado.kids = dadosNuvem.kids;
       if (dadosNuvem.meds) estado.meds = dadosNuvem.meds;
       
-      // Mesclagem Inteligente de Logs baseada no timestamp
       if (dadosNuvem.logs) {
         let mapa = new Map((estado.logs || []).map(l => [l.id, l]));
         dadosNuvem.logs.forEach(l => mapa.set(l.id, l));
         estado.logs = Array.from(mapa.values()).sort((a,b) => b.timestamp - a.timestamp);
+      } else {
+        estado.logs = [];
       }
 
       estado.parentAtivo = paiAtual;
+      const precisouCorrigir = auditarSegurancaMeds();
       
       localStorage.setItem(STORAGE_KEY, JSON.stringify(estado));
       renderizarTudo();
+
+      if (precisouCorrigir) {
+        setTimeout(() => enviarParaNuvem(), 500);
+      }
     }
 
     function salvarNoAparelho() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(estado));
       renderizarTudo();
-      enviarParaNuvem(); // Dispara atualização para a nuvem
+      enviarParaNuvem();
     }
 
     // -----------------------------------------------------
-    // 3. LÓGICA DE NEGÓCIO DO APLICATIVO
+    // 4. LÓGICA DE SINTOMAS, CATÁLOGO E CALCULADORA
     // -----------------------------------------------------
+    function selecionarSintoma(sintoma) {
+      sintomaSelecionado = sintoma;
+      document.querySelectorAll('.symptom-chip').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.trim() === sintoma || (sintoma === '💊 Rotina / Medicação' && btn.textContent.includes('Só Medicação')));
+      });
+      if (sintoma === '💧 Lavagem Nasal' && !document.getElementById('regDose').value) {
+        document.getElementById('regDose').value = 'Soro Fisiológico 0,9%';
+      }
+      renderizarTagsRapidas();
+    }
 
-    const BASE_BULAS_BR = [
-      { termos: ['dipirona', 'novalgina', 'maxalgina'], mgPorKg: 20, intervalo: 6, maxGotas: 40, nota: 'Dipirona: 15 a 25 mg/kg a cada 6h.' },
-      { termos: ['paracetamol', 'tylenol'], mgPorKg: 13, intervalo: 6, maxGotas: 35, nota: 'Paracetamol: 10 a 15 mg/kg a cada 6h.' },
-      { termos: ['ibuprofeno', 'alivium', 'buscofem', 'dalsy'], mgPorKg: 10, intervalo: 8, maxGotas: 40, nota: 'Ibuprofeno: 5 a 10 mg/kg a cada 8h.' },
-      { termos: ['amoxicilina', 'amoxil', 'clavulin'], mgPorKg: 16.6, intervalo: 8, maxGotas: 15, nota: 'Amoxicilina: ~16.6 mg/kg a cada 8h.' },
-      { termos: ['prednisolona', 'prelone', 'predsim'], mgPorKg: 1, intervalo: 24, maxGotas: 20, nota: 'Prednisolona: 1 mg/kg 1x ao dia.' }
-    ];
+    function renderizarTagsRapidas() {
+      const container = document.getElementById('quickTagsContainer');
+      const tags = TAGS_POR_SINTOMA[sintomaSelecionado] || [];
+      container.innerHTML = tags.map(t => `<button type="button" class="tag-btn" onclick="adicionarTagObs('${t}')">+ ${t}</button>`).join('');
+    }
 
-    renderizarTudo();
+    function adicionarTagObs(textoTag) {
+      const input = document.getElementById('regObs');
+      const atual = input.value.trim();
+      if (!atual) {
+        input.value = textoTag;
+      } else if (!atual.includes(textoTag)) {
+        input.value = `${atual}, ${textoTag}`;
+      }
+    }
+
+    function popularSelectCatalogo() {
+      const sel = document.getElementById('catalogoRapido');
+      if (!sel) return;
+      const categorias = {};
+      BASE_BULAS_BR.forEach(item => {
+        if (!categorias[item.categoria]) categorias[item.categoria] = [];
+        categorias[item.categoria].push(item);
+      });
+
+      let html = '<option value="">-- Escolha um remédio da base segura ou digite abaixo --</option>';
+      for (const cat in categorias) {
+        html += `<optgroup label="${cat}">`;
+        categorias[cat].forEach(it => {
+          html += `<option value="${it.idCat}">${it.nome}</option>`;
+        });
+        html += `</optgroup>`;
+      }
+      sel.innerHTML = html;
+    }
+
+    function selecionarDoCatalogo() {
+      const idCat = document.getElementById('catalogoRapido').value;
+      if (!idCat) return;
+      const item = BASE_BULAS_BR.find(x => x.idCat === idCat);
+      if (!item) return;
+
+      document.getElementById('medNome').value = item.nome;
+      document.getElementById('medMg').value = item.mg;
+      document.getElementById('medMlBase').value = String(item.mlBase);
+      document.getElementById('medGotasPorMl').value = String(item.gotasPorMl || 20);
+      document.getElementById('medUnidade').value = item.unidade;
+      document.getElementById('medIntervalo').value = String(item.intervalo);
+      document.getElementById('medMgPorKg').value = item.mgPorKg;
+      document.getElementById('medFatorPorKg').value = item.fatorPorKg;
+      document.getElementById('medMaxDose').value = item.maxDose;
+      document.getElementById('medNota').value = item.nota;
+
+      const box = document.getElementById('bulaResultadoBox');
+      box.style.display = 'block';
+      box.innerHTML = `🛡️ <strong>Posologia Verificada:</strong> ${item.nota}`;
+    }
 
     function abrirConfigIA() {
       document.getElementById('inputGeminiKey').value = iaConfig.geminiKey || '';
@@ -930,8 +1280,14 @@
     }
 
     function abrirModalMed() {
+      document.getElementById('catalogoRapido').value = '';
       document.getElementById('medNome').value = '';
       document.getElementById('medMg').value = '';
+      document.getElementById('medMgPorKg').value = '';
+      document.getElementById('medFatorPorKg').value = '';
+      document.getElementById('medMaxDose').value = '';
+      document.getElementById('medNota').value = '';
+      document.getElementById('medGotasPorMl').value = '20';
       document.getElementById('bulaResultadoBox').style.display = 'none';
       document.getElementById('modalMed').classList.add('active');
     }
@@ -939,13 +1295,16 @@
     function recalcularConversaoBula() {
       const mgFrasco = parseFloat(document.getElementById('medMg').value);
       const mlBase = parseFloat(document.getElementById('medMlBase').value) || 1;
+      const gotasPorMl = parseFloat(document.getElementById('medGotasPorMl').value) || 20;
       const mgPorKg = parseFloat(document.getElementById('medMgPorKg').value);
       const unidade = document.getElementById('medUnidade').value;
 
       if (mgFrasco > 0 && mgPorKg > 0) {
-        const conc = mgFrasco / mlBase;
-        const mlKg = mgPorKg / conc;
-        document.getElementById('medFatorPorKg').value = unidade === 'gotas' ? (mlKg * 20).toFixed(2) : mlKg.toFixed(2);
+        const concPorMl = mgFrasco / mlBase;
+        const mlPorKg = mgPorKg / concPorMl;
+        document.getElementById('medFatorPorKg').value = unidade === 'gotas' 
+          ? (mlPorKg * gotasPorMl).toFixed(2) 
+          : mlPorKg.toFixed(2);
       }
     }
 
@@ -956,22 +1315,27 @@
       if (!termo) { mostrarToast('Digite o nome do remédio'); return; }
 
       box.style.display = 'block';
-      box.innerHTML = '⏳ Consultando posologia...';
+      box.innerHTML = '⏳ Consultando base pediátrica...';
 
       const enc = BASE_BULAS_BR.find(b => b.termos.some(t => termo.includes(t)));
       if (enc) {
+        if (!document.getElementById('medMg').value) document.getElementById('medMg').value = enc.mg;
+        document.getElementById('medMlBase').value = String(enc.mlBase);
+        document.getElementById('medGotasPorMl').value = String(enc.gotasPorMl || 20);
+        document.getElementById('medUnidade').value = enc.unidade;
         document.getElementById('medMgPorKg').value = enc.mgPorKg;
         document.getElementById('medIntervalo').value = String(enc.intervalo);
-        document.getElementById('medMaxDose').value = enc.maxGotas;
+        document.getElementById('medMaxDose').value = enc.maxDose;
+        document.getElementById('medNota').value = enc.nota;
         recalcularConversaoBula();
-        box.innerHTML = `✅ <strong>Bula Localizada:</strong> ${enc.nota}`;
+        box.innerHTML = `✅ <strong>Bula Verificada:</strong> ${enc.nota}`;
         return;
       }
 
       if (iaConfig.geminiKey && navigator.onLine) {
         try {
           box.innerHTML = '⏳ Consultando IA Gemini...';
-          const prompt = `Farmacêutico pediátrico. Medicamento "${termo}" concentração "${mgFrasco || 'padrão'} mg". Responda APENAS JSON válido: {"mgPorKg": numero, "intervalo": horas, "maxDose": numero, "resumo": "explicacao"}`;
+          const prompt = `Atue como farmacêutico pediátrico no Brasil. Medicamento "${termo}" concentração "${mgFrasco || 'padrão'} mg". Responda APENAS JSON válido: {"mg": numero, "mlBase": numero, "gotasPorMl": numero, "unidade": "gotas" ou "mL", "mgPorKg": numero, "intervalo": horas, "maxDose": numero, "resumo": "orientacao curta segura"}`;
           const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${iaConfig.geminiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -982,9 +1346,14 @@
           const jsonMatch = rawText.match(/\{[\s\S]*\}/);
           if (jsonMatch) {
             const info = JSON.parse(jsonMatch[0]);
+            if (!document.getElementById('medMg').value && info.mg) document.getElementById('medMg').value = info.mg;
+            if (info.mlBase) document.getElementById('medMlBase').value = String(info.mlBase);
+            if (info.gotasPorMl) document.getElementById('medGotasPorMl').value = String(info.gotasPorMl);
+            if (info.unidade) document.getElementById('medUnidade').value = info.unidade;
             document.getElementById('medMgPorKg').value = info.mgPorKg;
             document.getElementById('medIntervalo').value = String(info.intervalo || 8);
             document.getElementById('medMaxDose').value = info.maxDose || 40;
+            document.getElementById('medNota').value = info.resumo || '';
             recalcularConversaoBula();
             box.innerHTML = `✅ <strong>Bula (Gemini AI):</strong> ${info.resumo}`;
             return;
@@ -992,35 +1361,57 @@
         } catch (e) {}
       }
 
-      box.innerHTML = `ℹ️ Medicamento não encontrado na base rápida. Preencha os campos abaixo manualmente.`;
+      box.innerHTML = `ℹ️ Medicamento fora da lista rápida. Selecione no Catálogo acima ou preencha manualmente.`;
     }
 
     function salvarMedicamento() {
       const nome = document.getElementById('medNome').value.trim();
       const mg = parseFloat(document.getElementById('medMg').value) || 0;
       const mlBase = parseFloat(document.getElementById('medMlBase').value) || 1;
+      const gotasPorMl = parseFloat(document.getElementById('medGotasPorMl').value) || 20;
       const unidade = document.getElementById('medUnidade').value;
       const intervalo = parseInt(document.getElementById('medIntervalo').value, 10) || 6;
       const mgPorKg = parseFloat(document.getElementById('medMgPorKg').value) || 0;
       const fatorPorKg = parseFloat(document.getElementById('medFatorPorKg').value) || 1;
       const maxDose = parseFloat(document.getElementById('medMaxDose').value) || 40;
+      const nota = document.getElementById('medNota').value.trim();
 
-      if (!nome) { mostrarToast('Informe o nome'); return; }
+      if (!nome) { mostrarToast('Informe o nome do remédio'); return; }
 
-      estado.meds.push({ id: 'med_' + Date.now(), nome: mg ? `${nome} ${mg}mg` : nome, mg, mlBase, unidade, intervalo, mgPorKg, fatorPorKg, maxDose });
+      estado.meds.push({
+        id: 'med_' + Date.now(),
+        nome,
+        mg,
+        mlBase,
+        gotasPorMl,
+        unidade,
+        intervalo,
+        mgPorKg,
+        fatorPorKg,
+        maxDose,
+        nota
+      });
       fecharModais();
       salvarNoAparelho();
+      mostrarToast('Medicamento adicionado!');
     }
 
     function removerMed(id) {
-      estado.meds = estado.meds.filter(m => m.id !== id);
-      salvarNoAparelho();
+      if (confirm('Deseja remover este medicamento da lista?')) {
+        estado.meds = estado.meds.filter(m => m.id !== id);
+        salvarNoAparelho();
+      }
     }
 
     function calcularDoseParaFilho(med, peso) {
       let bruta = peso * med.fatorPorKg;
       if (med.maxDose && bruta > med.maxDose) bruta = med.maxDose;
-      return med.unidade === 'gotas' ? `${Math.round(bruta)} gotas` : `${(Math.round(bruta * 2) / 2)} mL`;
+      if (med.unidade === 'gotas') {
+        return `${Math.round(bruta)} gotas`;
+      } else {
+        const arredondado = Math.round(bruta * 2) / 2;
+        return `${arredondado.toString().replace('.', ',')} mL`;
+      }
     }
 
     function getStatusHorarioMed(med, kid) {
@@ -1046,7 +1437,7 @@
       document.getElementById('regHora').value = getHoraAtualStr();
       document.getElementById('regMedId').value = medId;
       preencherDoseSugerida();
-      document.getElementById('regTemp').focus();
+      document.getElementById('formRegistro').scrollIntoView({ behavior: 'smooth' });
     }
 
     function criarRegistroInterno() {
@@ -1057,7 +1448,10 @@
       const dose = document.getElementById('regDose').value.trim();
       const obs = document.getElementById('regObs').value.trim();
 
-      if (!temp && !medId) { mostrarToast('Informe temp ou remédio'); return null; }
+      if (!temp && !medId && !obs && sintomaSelecionado === '🌡️ Febre') {
+        mostrarToast('Informe a temperatura, medicação ou observação');
+        return null;
+      }
 
       const med = estado.meds.find(m => m.id === medId);
       const [h, m] = hora.split(':').map(Number);
@@ -1068,6 +1462,7 @@
         kidNome: kid.nome,
         kidPeso: kid.peso,
         parent: estado.parentAtivo,
+        sintoma: sintomaSelecionado,
         hora,
         dataStr: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
         timestamp: d.getTime(),
@@ -1086,7 +1481,7 @@
 
     document.getElementById('formRegistro').addEventListener('submit', (e) => {
       e.preventDefault();
-      if (criarRegistroInterno()) mostrarToast('Salvo e Atualizado na Nuvem!');
+      if (criarRegistroInterno()) mostrarToast('Registro Salvo na Nuvem!');
     });
 
     function salvarEEnviarWhats() {
@@ -1096,17 +1491,19 @@
 
     function enviarRelatorioWhatsApp() {
       const kid = getFilhoAtivo();
-      const logsKid = estado.logs.filter(l => l.kidNome === kid.nome).slice(0, 5);
+      const logsKid = estado.logs.filter(l => l.kidNome === kid.nome).slice(0, 8);
 
-      let texto = `🌡️ *RELATÓRIO • ${kid.nome.toUpperCase()}* (${kid.peso} kg)\n\n`;
+      let texto = `🩺 *BOLETIM DE SAÚDE • ${kid.nome.toUpperCase()}* (${kid.peso} kg)\n\n`;
       if (logsKid.length === 0) {
         texto += `Nenhum registro recente.\n`;
       } else {
         logsKid.forEach(l => {
-          texto += `• *${l.hora}* (${l.dataStr}) - Por: *${l.parent}*\n`;
+          const sint = l.sintoma || '🌡️ Registro';
+          texto += `• *${l.hora}* (${l.dataStr}) — ${sint} _(${l.parent})_\n`;
           if (l.temp) texto += `  🌡️ Temp: \`${l.temp}°C\`\n`;
           if (l.medNome) texto += `  💊 Med: ${l.medNome} (${l.dose})\n`;
-          if (l.obs) texto += `  📝 \`${l.obs}\`\n`;
+          else if (l.dose) texto += `  💧 Cuidado: ${l.dose}\n`;
+          if (l.obs) texto += `  📝 _${l.obs}_\n`;
         });
       }
 
@@ -1115,9 +1512,19 @@
 
     function limparHistoricoFilho() {
       const kid = getFilhoAtivo();
-      estado.logs = estado.logs.filter(l => l.kidNome !== kid.nome);
-      salvarNoAparelho();
-      mostrarToast('Histórico limpo');
+      if (confirm(`Deseja limpar o histórico de ${kid.nome}?`)) {
+        estado.logs = estado.logs.filter(l => l.kidNome !== kid.nome);
+        salvarNoAparelho();
+        mostrarToast('Histórico limpo');
+      }
+    }
+
+    function obterClasseAlertaLog(l) {
+      if (l.temp && parseFloat(l.temp) >= 37.8) return 'high-fever';
+      const s = l.sintoma || '';
+      if (s.includes('Vômito') || s.includes('Diarreia')) return 'gastro-alert';
+      if (s.includes('Tosse') || s.includes('Alergia')) return 'resp-alert';
+      return '';
     }
 
     function renderizarTudo() {
@@ -1141,7 +1548,7 @@
 
       const selectMed = document.getElementById('regMedId');
       const valAnt = selectMed.value;
-      selectMed.innerHTML = '<option value="">Apenas medir temp.</option>';
+      selectMed.innerHTML = '<option value="">Nenhum / Apenas Sintoma</option>';
 
       document.getElementById('medsContainer').innerHTML = estado.meds.map(m => {
         const dose = calcularDoseParaFilho(m, kid.peso);
@@ -1155,13 +1562,13 @@
             <div class="med-top">
               <div>
                 <div class="med-title">${m.nome}</div>
-                <div class="med-sub">Intervalo: ${m.intervalo}h</div>
+                <div class="med-sub">Intervalo: ${m.intervalo}h ${m.nota ? `• ${m.nota}` : ''}</div>
               </div>
               <button class="btn btn-outline btn-sm" onclick="removerMed('${m.id}')">✕</button>
             </div>
             <div class="dose-highlight">
-              <span>Dose: <strong>${dose}</strong></span>
-              <button class="btn btn-primary btn-sm" onclick="usarMedRapido('${m.id}')">Dar Agora</button>
+              <span>Dose Segura: <strong>${dose}</strong></span>
+              <button class="btn btn-primary btn-sm" onclick="usarMedRapido('${m.id}')">Selecionar</button>
             </div>
             <div><span class="timer-badge ${status.liberado ? 'timer-ok' : 'timer-wait'}">${status.texto}</span></div>
           </div>
@@ -1171,15 +1578,18 @@
 
       const logsKid = estado.logs.filter(l => l.kidNome === kid.nome);
       document.getElementById('logsContainer').innerHTML = logsKid.length === 0 ? 
-        '<p style="text-align:center;color:var(--text-muted);font-size:0.85rem;padding:16px;">Nenhum registro.</p>' :
-        logsKid.map(l => `
-          <div class="log-item ${l.temp && parseFloat(l.temp) >= 37.8 ? 'high-fever' : ''}">
-            <div class="log-info">
-              <h4>${l.hora} (${l.dataStr}) ${l.temp ? `• 🌡️ ${l.temp}°C` : ''} ${l.medNome ? `• 💊 ${l.medNome}` : ''}</h4>
-              <div class="log-meta">${l.dose ? `Dose: ${l.dose} | ` : ''}Por: ${l.parent} ${l.obs ? `<br/><em>${l.obs}</em>` : ''}</div>
+        '<p style="text-align:center;color:var(--text-muted);font-size:0.85rem;padding:16px;">Nenhum registro clínico.</p>' :
+        logsKid.map(l => {
+          const badgeSintoma = l.sintoma ? `${l.sintoma} ` : '';
+          return `
+            <div class="log-item ${obterClasseAlertaLog(l)}">
+              <div class="log-info">
+                <h4>${l.hora} (${l.dataStr}) • ${badgeSintoma}${l.temp ? `• 🌡️ ${l.temp}°C ` : ''}${l.medNome ? `• 💊 ${l.medNome}` : ''}</h4>
+                <div class="log-meta">${l.dose ? `Dose/Cuidado: <strong>${l.dose}</strong> | ` : ''}Por: ${l.parent} ${l.obs ? `<br/><em>📝 ${l.obs}</em>` : ''}</div>
+              </div>
             </div>
-          </div>
-        `).join('');
+          `;
+        }).join('');
     }
 
     function fecharModais() { document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('active')); }
