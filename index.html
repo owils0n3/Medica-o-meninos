@@ -20,7 +20,7 @@
       /* Tema Padrão / Wilson (Azul Suave) */
       --bg-primary: #EAF4FE;
       --bg-elevated: #FFFFFF;
-      --bg-glass: rgba(234, 244, 254, 0.86);
+      --bg-glass: rgba(234, 244, 254, 0.88);
       --bg-segmented: #D5E8FA;
       --bg-card-inner: #F4F9FF;
       
@@ -55,7 +55,7 @@
     /* Tema Rayssa (Roseado Suave) */
     body.theme-rayssa {
       --bg-primary: #FDF0F5;
-      --bg-glass: rgba(253, 240, 245, 0.86);
+      --bg-glass: rgba(253, 240, 245, 0.88);
       --bg-segmented: #F5DCE6;
       --bg-card-inner: #FFF7FA;
       
@@ -117,7 +117,7 @@
       backdrop-filter: saturate(180%) blur(20px);
       -webkit-backdrop-filter: saturate(180%) blur(20px);
       border-bottom: 0.5px solid var(--border-hairline);
-      padding: 14px 20px 16px;
+      padding: 12px 16px;
       transition: background-color 0.35s ease;
     }
 
@@ -126,16 +126,21 @@
       margin: 0 auto;
     }
 
+    /* Nova barra superior estilo iOS limpa */
     .nav-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
+      gap: 10px;
     }
 
-    .brand-title span {
-      font-size: 0.72rem;
+    .brand-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-subtitle {
+      font-size: 0.68rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.8px;
@@ -143,76 +148,65 @@
       transition: color 0.3s ease;
     }
 
-    .brand-title h1 {
-      font-size: 1.35rem;
+    .brand-title {
+      font-size: 1.2rem;
       font-weight: 700;
-      letter-spacing: -0.5px;
+      letter-spacing: -0.4px;
       color: var(--text-primary);
+    }
+
+    /* Chave seletora estilo iOS minimalista */
+    .ios-segmented-control {
+      display: flex;
+      background: var(--bg-segmented);
+      border-radius: 99px;
+      padding: 3px;
+      border: 0.5px solid var(--border-strong);
+      transition: background-color 0.3s ease;
+    }
+
+    .ios-segment-btn {
+      background: transparent;
+      color: var(--text-secondary);
+      border: none;
+      padding: 6px 14px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .ios-segment-btn.active {
+      background: var(--primary-gradient);
+      color: #FFFFFF;
+      box-shadow: 0 2px 6px var(--primary-shadow);
     }
 
     .nav-actions {
       display: flex;
       align-items: center;
       gap: 6px;
-      flex-wrap: wrap;
     }
 
-    .btn-ios {
+    .btn-icon-ios {
+      width: 36px;
       height: 36px;
-      padding: 0 12px;
-      border-radius: 99px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      border: none;
+      border-radius: 50%;
+      background: var(--bg-segmented);
+      border: 0.5px solid var(--border-strong);
+      color: var(--text-primary);
+      font-size: 0.95rem;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 4px;
-      transition: transform 0.12s ease, opacity 0.12s ease, background-color 0.3s ease;
-      white-space: nowrap;
+      transition: transform 0.12s ease, opacity 0.12s ease;
     }
 
-    .btn-ios:active {
-      transform: scale(0.96);
-      opacity: 0.85;
-    }
-
-    .btn-ios-primary {
-      background: var(--primary-gradient);
-      color: #FFFFFF;
-      box-shadow: 0 3px 10px var(--primary-shadow);
-    }
-
-    .btn-ios-secondary {
-      background: var(--bg-segmented);
-      color: var(--text-primary);
-    }
-
-    .parent-toggle {
-      display: flex;
-      background: var(--bg-segmented);
-      border-radius: 99px;
-      padding: 3px;
-      transition: background-color 0.3s ease;
-    }
-
-    .parent-btn {
-      background: transparent;
-      color: var(--text-secondary);
-      border: none;
-      padding: 5px 13px;
-      border-radius: 99px;
-      font-size: 0.78rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.22s ease;
-    }
-
-    .parent-btn.active {
-      background: var(--primary-gradient);
-      color: #FFFFFF;
-      box-shadow: 0 2px 6px var(--primary-shadow);
+    .btn-icon-ios:active {
+      transform: scale(0.92);
+      opacity: 0.8;
     }
 
     .container {
@@ -601,17 +595,22 @@
     <header>
       <div class="app-shell">
         <div class="nav-bar">
-          <div class="brand-title">
-            <span id="labelResponsavelTopo">Modo • Wilson</span>
-            <h1>Rocha Batista</h1>
+          <!-- Título e Subtítulo limpos -->
+          <div class="brand-group">
+            <span class="brand-subtitle" id="labelResponsavelTopo">Modo • Wilson</span>
+            <div class="brand-title">Rocha Batista</div>
           </div>
+
+          <!-- Chave Seletora Estilo iOS (Sem emojis) -->
+          <div class="ios-segmented-control">
+            <button type="button" id="btnPai" class="ios-segment-btn active" onclick="setParent('Wilson')">Wilson</button>
+            <button type="button" id="btnMae" class="ios-segment-btn" onclick="setParent('Rayssa')">Rayssa</button>
+          </div>
+
+          <!-- Ações Rápidas (Relatório antes, Engrenagem de Configuração depois) -->
           <div class="nav-actions">
-            <button class="btn-ios btn-ios-secondary" onclick="abrirConfigIA()" title="Configurar IA">🤖 Config. IA</button>
-            <button class="btn-ios btn-ios-secondary" onclick="enviarRelatorioWhatsApp()" title="Enviar relatório no WhatsApp">📄 Relatório</button>
-            <div class="parent-toggle">
-              <button type="button" id="btnPai" class="parent-btn active" onclick="setParent('Wilson')">👨🏻 Wilson</button>
-              <button type="button" id="btnMae" class="parent-btn" onclick="setParent('Rayssa')">👩🏻 Rayssa</button>
-            </div>
+            <button class="btn-icon-ios" onclick="enviarRelatorioWhatsApp()" title="Enviar Relatório no WhatsApp">📄</button>
+            <button class="btn-icon-ios" onclick="abrirConfigIA()" title="Configuração IA">⚙️</button>
           </div>
         </div>
       </div>
