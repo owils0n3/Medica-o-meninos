@@ -10,6 +10,11 @@
   <meta name="apple-mobile-web-app-title" content="Rocha Batista" />
   <meta name="theme-color" content="#F2F2F7" />
 
+  <!-- Bibliotecas do Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-database-compat.js"></script>
+
   <style>
     :root {
       --bg-primary: #F2F2F7;
@@ -56,6 +61,30 @@
       min-height: 100vh;
       padding-bottom: 70px;
     }
+
+    /* Tela de Carregamento Invisível */
+    #loadingScreen {
+      position: fixed;
+      inset: 0;
+      background: var(--bg-primary);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid var(--border-strong);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin { 100% { transform: rotate(360deg); } }
 
     header {
       position: sticky;
@@ -471,99 +500,107 @@
 </head>
 <body>
 
-  <header>
-    <div class="app-shell">
-      <div class="nav-bar">
-        <div class="brand-title">
-          <span>Família</span>
-          <h1>Rocha Batista</h1>
-        </div>
-        <div class="nav-actions">
-          <button class="btn-ios btn-ios-secondary" onclick="sincronizarManual()" title="Sincronizar com a nuvem">🔄 Sincronizar</button>
-          <button class="btn-ios btn-ios-secondary" onclick="abrirConfigSync()" title="Configurar Token e IA">⚙️ Token / IA</button>
-          <button class="btn-ios btn-ios-secondary" onclick="enviarRelatorioWhatsApp()" title="Enviar relatório para Rayssa">📄 Relatório</button>
-          <div class="parent-toggle">
-            <button type="button" id="btnPai" class="parent-btn active" onclick="setParent('Wilson')">Wilson</button>
-            <button type="button" id="btnMae" class="parent-btn" onclick="setParent('Rayssa')">Rayssa</button>
+  <!-- Tela de Carregamento Invisível -->
+  <div id="loadingScreen">
+    <div class="spinner"></div>
+    <p style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 600;">Conectando à Farmacinha...</p>
+  </div>
+
+  <div id="appContent" style="display: none;">
+    <header>
+      <div class="app-shell">
+        <div class="nav-bar">
+          <div class="brand-title">
+            <span>Família</span>
+            <h1>Rocha Batista</h1>
+          </div>
+          <div class="nav-actions">
+            <!-- Botão Configurar Token / IA substituído por IA Apenas -->
+            <button class="btn-ios btn-ios-secondary" onclick="abrirConfigIA()" title="Configurar IA">🤖 Config. IA</button>
+            <button class="btn-ios btn-ios-secondary" onclick="enviarRelatorioWhatsApp()" title="Enviar relatório para Rayssa">📄 Relatório</button>
+            <div class="parent-toggle">
+              <button type="button" id="btnPai" class="parent-btn active" onclick="setParent('Wilson')">Wilson</button>
+              <button type="button" id="btnMae" class="parent-btn" onclick="setParent('Rayssa')">Rayssa</button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <div class="container">
+    <div class="container">
 
-    <!-- 1. SELETOR DE FILHOS -->
-    <div class="ios-card">
-      <div class="card-header">
-        <span class="card-title">👦 Selecione o Filho</span>
-        <button class="btn btn-outline btn-sm" onclick="abrirModalFilho()">+ Novo Filho</button>
-      </div>
-      <div id="kidsContainer" class="kids-bar"></div>
-    </div>
-
-    <!-- 2. FARMACINHA & CALCULADORA -->
-    <div class="ios-card">
-      <div class="card-header">
-        <span class="card-title">💊 Medicamentos p/ <span id="nomeFilhoAtivo">...</span></span>
-        <button class="btn btn-primary btn-sm" onclick="abrirModalMed()">+ Novo Remédio</button>
-      </div>
-      <p style="font-size:0.78rem; color:var(--text-secondary); margin-bottom:12px;">
-        Doses calculadas automaticamente para <strong id="pesoFilhoAtivo">0 kg</strong>.
-      </p>
-      <div id="medsContainer" class="med-list"></div>
-    </div>
-
-    <!-- 3. REGISTRAR FEBRE OU MEDICAÇÃO -->
-    <div class="ios-card">
-      <div class="card-header">
-        <span class="card-title">📝 Registrar Febre / Dose Dada</span>
-      </div>
-      <form id="formRegistro">
-        <div class="grid-3 form-group">
-          <div>
-            <label>Horário</label>
-            <input type="time" id="regHora" required />
-          </div>
-          <div>
-            <label>Temperatura (°C)</label>
-            <input type="number" step="0.1" id="regTemp" placeholder="Ex: 38.5" inputmode="decimal" />
-          </div>
-          <div>
-            <label>Medicamento</label>
-            <select id="regMedId" onchange="preencherDoseSugerida()">
-              <option value="">Apenas medir temp.</option>
-            </select>
-          </div>
+      <!-- 1. SELETOR DE FILHOS -->
+      <div class="ios-card">
+        <div class="card-header">
+          <span class="card-title">👦 Selecione o Filho</span>
+          <button class="btn btn-outline btn-sm" onclick="abrirModalFilho()">+ Novo Filho</button>
         </div>
-
-        <div class="grid-2 form-group">
-          <div>
-            <label>Dose Administrada</label>
-            <input type="text" id="regDose" placeholder="Ex: 14 gotas ou 5 mL" />
-          </div>
-          <div>
-            <label>Observação rápida</label>
-            <input type="text" id="regObs" placeholder="Ex: Banho morno..." />
-          </div>
-        </div>
-
-        <div class="grid-2" style="margin-top: 10px;">
-          <button type="submit" class="btn btn-primary">✅ Só Salvar</button>
-          <button type="button" class="btn btn-whatsapp" onclick="salvarEEnviarWhats()">📲 Salvar e Enviar Whats</button>
-        </div>
-      </form>
-    </div>
-
-    <!-- 4. HISTÓRICO -->
-    <div class="ios-card">
-      <div class="card-header">
-        <span class="card-title">🕒 Histórico de <span id="nomeFilhoHist">...</span></span>
-        <button class="btn btn-danger btn-sm" onclick="limparHistoricoFilho()">Limpar Histórico</button>
+        <div id="kidsContainer" class="kids-bar"></div>
       </div>
-      <div id="logsContainer"></div>
-    </div>
 
+      <!-- 2. FARMACINHA & CALCULADORA -->
+      <div class="ios-card">
+        <div class="card-header">
+          <span class="card-title">💊 Medicamentos p/ <span id="nomeFilhoAtivo">...</span></span>
+          <button class="btn btn-primary btn-sm" onclick="abrirModalMed()">+ Novo Remédio</button>
+        </div>
+        <p style="font-size:0.78rem; color:var(--text-secondary); margin-bottom:12px;">
+          Doses calculadas automaticamente para <strong id="pesoFilhoAtivo">0 kg</strong>.
+        </p>
+        <div id="medsContainer" class="med-list"></div>
+      </div>
+
+      <!-- 3. REGISTRAR FEBRE OU MEDICAÇÃO -->
+      <div class="ios-card">
+        <div class="card-header">
+          <span class="card-title">📝 Registrar Febre / Dose Dada</span>
+        </div>
+        <form id="formRegistro">
+          <div class="grid-3 form-group">
+            <div>
+              <label>Horário</label>
+              <input type="time" id="regHora" required />
+            </div>
+            <div>
+              <label>Temperatura (°C)</label>
+              <input type="number" step="0.1" id="regTemp" placeholder="Ex: 38.5" inputmode="decimal" />
+            </div>
+            <div>
+              <label>Medicamento</label>
+              <select id="regMedId" onchange="preencherDoseSugerida()">
+                <option value="">Apenas medir temp.</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid-2 form-group">
+            <div>
+              <label>Dose Administrada</label>
+              <input type="text" id="regDose" placeholder="Ex: 14 gotas ou 5 mL" />
+            </div>
+            <div>
+              <label>Observação rápida</label>
+              <input type="text" id="regObs" placeholder="Ex: Banho morno..." />
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-top: 10px;">
+            <button type="submit" class="btn btn-primary">✅ Só Salvar</button>
+            <button type="button" class="btn btn-whatsapp" onclick="salvarEEnviarWhats()">📲 Salvar e Enviar Whats</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- 4. HISTÓRICO -->
+      <div class="ios-card">
+        <div class="card-header">
+          <span class="card-title">🕒 Histórico de <span id="nomeFilhoHist">...</span></span>
+          <button class="btn btn-danger btn-sm" onclick="limparHistoricoFilho()">Limpar Histórico</button>
+        </div>
+        <div id="logsContainer"></div>
+      </div>
+
+    </div>
   </div>
 
   <!-- MODAL: CADASTRAR / EDITAR FILHO -->
@@ -659,26 +696,22 @@
     </div>
   </div>
 
-  <!-- MODAL CONFIG GIST SYNC & GEMINI -->
-  <div id="modalSync" class="modal-backdrop" onclick="if(event.target.id==='modalSync') fecharConfigSync()">
+  <!-- MODAL CONFIG IA -->
+  <div id="modalConfigIA" class="modal-backdrop" onclick="if(event.target.id==='modalConfigIA') fecharConfigIA()">
     <div class="modal-sheet">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-        <h3>Configurações & Chaves</h3>
-        <button class="btn btn-outline btn-sm" onclick="fecharConfigSync()">✕</button>
-      </div>
-      <div class="form-group">
-        <label>GitHub Personal Access Token (ghp_...)</label>
-        <input type="password" id="inputToken" placeholder="Cole seu token aqui" />
+        <h3>Configuração IA</h3>
+        <button class="btn btn-outline btn-sm" onclick="fecharConfigIA()">✕</button>
       </div>
       <div class="form-group" style="margin-top: 12px;">
         <label>Chave API do Gemini (Google AI Studio)</label>
         <input type="password" id="inputGeminiKey" placeholder="AIzaSy..." />
         <small style="color:var(--text-secondary); font-size:0.75rem; display:block; margin-top:4px;">
-          Opcional: Permite consultar posologias e bulas raras automaticamente na internet.
+          Permite consultar posologias e bulas raras automaticamente na internet.
         </small>
       </div>
       <div class="modal-footer" style="margin-top: 16px;">
-        <button class="btn btn-primary" onclick="salvarConfigSync()">Salvar Configurações</button>
+        <button class="btn btn-primary" onclick="salvarConfigIA()">Salvar Configuração</button>
       </div>
     </div>
   </div>
@@ -686,16 +719,33 @@
   <div id="toast">Salvo</div>
 
   <script>
-    const STORAGE_KEY = 'rocha_batista_febre_v3';
-    const SYNC_CONFIG_KEY = 'rocha_batista_sync_config_v3';
+    // -----------------------------------------------------
+    // 1. CONFIGURAÇÃO E INICIALIZAÇÃO DO FIREBASE
+    // -----------------------------------------------------
+    const firebaseConfig = {
+      apiKey: "AIzaSyD7vdvBDk6k48AlRDQpdrhOxG212MovmrM",
+      authDomain: "rocha-batista.firebaseapp.com",
+      databaseURL: "https://rocha-batista-default-rtdb.firebaseio.com",
+      projectId: "rocha-batista",
+      storageBucket: "rocha-batista.firebasestorage.app",
+      messagingSenderId: "737568409775",
+      appId: "1:737568409775:web:41b6eefa0b18199886ac5a"
+    };
 
-    const BASE_BULAS_BR = [
-      { termos: ['dipirona', 'novalgina', 'maxalgina'], mgPorKg: 20, intervalo: 6, maxGotas: 40, nota: 'Dipirona: 15 a 25 mg/kg a cada 6h.' },
-      { termos: ['paracetamol', 'tylenol'], mgPorKg: 13, intervalo: 6, maxGotas: 35, nota: 'Paracetamol: 10 a 15 mg/kg a cada 6h.' },
-      { termos: ['ibuprofeno', 'alivium', 'buscofem', 'dalsy'], mgPorKg: 10, intervalo: 8, maxGotas: 40, nota: 'Ibuprofeno: 5 a 10 mg/kg a cada 8h.' },
-      { termos: ['amoxicilina', 'amoxil', 'clavulin'], mgPorKg: 16.6, intervalo: 8, maxGotas: 15, nota: 'Amoxicilina: ~16.6 mg/kg a cada 8h.' },
-      { termos: ['prednisolona', 'prelone', 'predsim'], mgPorKg: 1, intervalo: 24, maxGotas: 20, nota: 'Prednisolona: 1 mg/kg 1x ao dia.' }
-    ];
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+    
+    // Credenciais Invisíveis
+    const DEFAULT_EMAIL = "rochabatista@wilson.com";
+    const DEFAULT_PASS = "wrzt01";
+
+    let userId = null;
+    let isSyncing = false; 
+    let dbListener = null;
+
+    const STORAGE_KEY = 'rocha_batista_febre_v4';
+    const SYNC_CONFIG_KEY = 'rocha_batista_ia_config_v4';
 
     let estado = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
       parentAtivo: 'Wilson',
@@ -711,118 +761,108 @@
       logs: []
     };
 
-    let syncConfig = JSON.parse(localStorage.getItem(SYNC_CONFIG_KEY)) || { token: '', geminiKey: '', gistId: '' };
+    let iaConfig = JSON.parse(localStorage.getItem(SYNC_CONFIG_KEY)) || { geminiKey: '' };
 
-    renderizarTudo();
-    if (syncConfig.token) baixarDaNuvem();
+    // -----------------------------------------------------
+    // 2. AUTENTICAÇÃO INVISÍVEL
+    // -----------------------------------------------------
+    // Inicia o processo de login automático assim que a página abre
+    auth.signInWithEmailAndPassword(DEFAULT_EMAIL, DEFAULT_PASS).catch(err => {
+      console.error("Erro no login automático:", err.message);
+      mostrarToast("Erro de conexão ao banco de dados.");
+    });
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        userId = user.uid;
+        document.getElementById('loadingScreen').style.display = 'none';
+        document.getElementById('appContent').style.display = 'block';
+        iniciarSincronizacaoTempoReal();
+      } else {
+        userId = null;
+        if (dbListener) { dbListener.off(); dbListener = null; }
+      }
+    });
+
+    function iniciarSincronizacaoTempoReal() {
+      dbListener = db.ref('usuarios/' + userId + '/dados');
+      dbListener.on('value', snapshot => {
+        isSyncing = true;
+        if (snapshot.exists()) {
+          mesclarDadosNuvem(snapshot.val());
+        } else {
+          // Se o banco estiver vazio (primeiro acesso), envia os dados locais iniciais
+          enviarParaNuvem();
+        }
+        isSyncing = false;
+      });
+    }
+
+    async function enviarParaNuvem() {
+      if (!userId || isSyncing) return;
+      try {
+        await db.ref('usuarios/' + userId + '/dados').set(estado);
+      } catch (e) {
+        console.error('Erro ao enviar para Firebase', e);
+      }
+    }
+
+    function mesclarDadosNuvem(dadosNuvem) {
+      if (!dadosNuvem) return;
+      
+      // Preserva o parentAtivo local (quem está segurando o aparelho)
+      const paiAtual = estado.parentAtivo;
+
+      if (dadosNuvem.kids) estado.kids = dadosNuvem.kids;
+      if (dadosNuvem.meds) estado.meds = dadosNuvem.meds;
+      
+      // Mesclagem Inteligente de Logs baseada no timestamp
+      if (dadosNuvem.logs) {
+        let mapa = new Map((estado.logs || []).map(l => [l.id, l]));
+        dadosNuvem.logs.forEach(l => mapa.set(l.id, l));
+        estado.logs = Array.from(mapa.values()).sort((a,b) => b.timestamp - a.timestamp);
+      }
+
+      estado.parentAtivo = paiAtual;
+      
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(estado));
+      renderizarTudo();
+    }
 
     function salvarNoAparelho() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(estado));
       renderizarTudo();
-      enviarParaNuvem();
+      enviarParaNuvem(); // Dispara atualização para a nuvem
     }
 
-    async function descobrirGistAutomaticamente() {
-      if (!syncConfig.token) return;
-      try {
-        const res = await fetch('https://api.github.com/gists', {
-          headers: { 'Authorization': `token ${syncConfig.token}`, 'Accept': 'application/vnd.github.v3+json' }
-        });
-        if (res.ok) {
-          const gists = await res.json();
-          const meuGist = gists.find(g => g.files && g.files['rocha_batista_febre.json']);
-          if (meuGist) {
-            syncConfig.gistId = meuGist.id;
-            localStorage.setItem(SYNC_CONFIG_KEY, JSON.stringify(syncConfig));
-          }
-        }
-      } catch (e) {}
+    // -----------------------------------------------------
+    // 3. LÓGICA DE NEGÓCIO DO APLICATIVO
+    // -----------------------------------------------------
+
+    const BASE_BULAS_BR = [
+      { termos: ['dipirona', 'novalgina', 'maxalgina'], mgPorKg: 20, intervalo: 6, maxGotas: 40, nota: 'Dipirona: 15 a 25 mg/kg a cada 6h.' },
+      { termos: ['paracetamol', 'tylenol'], mgPorKg: 13, intervalo: 6, maxGotas: 35, nota: 'Paracetamol: 10 a 15 mg/kg a cada 6h.' },
+      { termos: ['ibuprofeno', 'alivium', 'buscofem', 'dalsy'], mgPorKg: 10, intervalo: 8, maxGotas: 40, nota: 'Ibuprofeno: 5 a 10 mg/kg a cada 8h.' },
+      { termos: ['amoxicilina', 'amoxil', 'clavulin'], mgPorKg: 16.6, intervalo: 8, maxGotas: 15, nota: 'Amoxicilina: ~16.6 mg/kg a cada 8h.' },
+      { termos: ['prednisolona', 'prelone', 'predsim'], mgPorKg: 1, intervalo: 24, maxGotas: 20, nota: 'Prednisolona: 1 mg/kg 1x ao dia.' }
+    ];
+
+    renderizarTudo();
+
+    function abrirConfigIA() {
+      document.getElementById('inputGeminiKey').value = iaConfig.geminiKey || '';
+      document.getElementById('modalConfigIA').classList.add('active');
     }
-
-    async function baixarDaNuvem() {
-      if (!syncConfig.token) return;
-      if (!syncConfig.gistId) await descobrirGistAutomaticamente();
-      if (!syncConfig.gistId) return;
-
-      try {
-        const res = await fetch(`https://api.github.com/gists/${syncConfig.gistId}`, {
-          headers: { 'Authorization': `token ${syncConfig.token}`, 'Accept': 'application/vnd.github.v3+json' }
-        });
-        if (res.ok) {
-          const data = await res.json();
-          const arquivo = data.files['rocha_batista_febre.json'];
-          if (arquivo) {
-            const dadosNuvem = JSON.parse(arquivo.content);
-            mesclarDadosNuvem(dadosNuvem);
-          }
-        }
-      } catch (e) {}
+    
+    function fecharConfigIA() { 
+      document.getElementById('modalConfigIA').classList.remove('active'); 
     }
-
-    async function enviarParaNuvem() {
-      if (!syncConfig.token) return;
-      if (!syncConfig.gistId) await descobrirGistAutomaticamente();
-
-      try {
-        const headers = { 'Authorization': `token ${syncConfig.token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
-        const body = {
-          description: "Sincronização Rocha Batista Febre & Medicação",
-          files: { "rocha_batista_febre.json": { content: JSON.stringify(estado, null, 2) } }
-        };
-
-        let url = 'https://api.github.com/gists';
-        let method = 'POST';
-        if (syncConfig.gistId) {
-          url = `https://api.github.com/gists/${syncConfig.gistId}`;
-          method = 'PATCH';
-        }
-
-        const res = await fetch(url, { method, headers, body: JSON.stringify(body) });
-        if (res.ok) {
-          const data = await res.json();
-          if (!syncConfig.gistId) {
-            syncConfig.gistId = data.id;
-            localStorage.setItem(SYNC_CONFIG_KEY, JSON.stringify(syncConfig));
-          }
-        }
-      } catch (e) {}
-    }
-
-    async function sincronizarManual() {
-      if (!syncConfig.token) { abrirConfigSync(); return; }
-      mostrarToast('Sincronizando...');
-      await baixarDaNuvem();
-      await enviarParaNuvem();
-      mostrarToast('Atualizado!');
-    }
-
-    function abrirConfigSync() {
-      document.getElementById('inputToken').value = syncConfig.token || '';
-      document.getElementById('inputGeminiKey').value = syncConfig.geminiKey || '';
-      document.getElementById('modalSync').classList.add('active');
-    }
-    function fecharConfigSync() { document.getElementById('modalSync').classList.remove('active'); }
-    function salvarConfigSync() {
-      syncConfig.token = document.getElementById('inputToken').value.trim();
-      syncConfig.geminiKey = document.getElementById('inputGeminiKey').value.trim();
-      syncConfig.gistId = '';
-      localStorage.setItem(SYNC_CONFIG_KEY, JSON.stringify(syncConfig));
-      fecharConfigSync();
-      mostrarToast('Configurações salvas!');
-      baixarDaNuvem();
-    }
-
-    function mesclarDadosNuvem(nuvem) {
-      if (!nuvem) return;
-      if (nuvem.kids) estado.kids = nuvem.kids;
-      if (nuvem.meds) estado.meds = nuvem.meds;
-      if (nuvem.logs) {
-        let mapa = new Map(estado.logs.map(l => [l.id, l]));
-        nuvem.logs.forEach(l => mapa.set(l.id, l));
-        estado.logs = Array.from(mapa.values()).sort((a,b) => b.timestamp - a.timestamp);
-      }
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(estado));
-      renderizarTudo();
+    
+    function salvarConfigIA() {
+      iaConfig.geminiKey = document.getElementById('inputGeminiKey').value.trim();
+      localStorage.setItem(SYNC_CONFIG_KEY, JSON.stringify(iaConfig));
+      fecharConfigIA();
+      mostrarToast('Configuração IA salva!');
     }
 
     function setParent(nome) {
@@ -928,11 +968,11 @@
         return;
       }
 
-      if (syncConfig.geminiKey && navigator.onLine) {
+      if (iaConfig.geminiKey && navigator.onLine) {
         try {
           box.innerHTML = '⏳ Consultando IA Gemini...';
           const prompt = `Farmacêutico pediátrico. Medicamento "${termo}" concentração "${mgFrasco || 'padrão'} mg". Responda APENAS JSON válido: {"mgPorKg": numero, "intervalo": horas, "maxDose": numero, "resumo": "explicacao"}`;
-          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${syncConfig.geminiKey}`, {
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${iaConfig.geminiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
@@ -1046,7 +1086,7 @@
 
     document.getElementById('formRegistro').addEventListener('submit', (e) => {
       e.preventDefault();
-      if (criarRegistroInterno()) mostrarToast('Salvo!');
+      if (criarRegistroInterno()) mostrarToast('Salvo e Atualizado na Nuvem!');
     });
 
     function salvarEEnviarWhats() {
