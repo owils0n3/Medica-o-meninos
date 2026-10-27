@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Rocha Batista" />
-  <meta name="theme-color" content="#F2F2F7" />
+  <meta name="theme-color" id="metaThemeColor" content="#EAF4FE" />
 
   <!-- Bibliotecas do Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
@@ -17,15 +17,19 @@
 
   <style>
     :root {
-      --bg-primary: #F2F2F7;
+      /* Tema Padrão / Wilson (Azul Suave) */
+      --bg-primary: #EAF4FE;
       --bg-elevated: #FFFFFF;
-      --bg-glass: rgba(242, 242, 247, 0.88);
-      --bg-segmented: #E5E5EA;
+      --bg-glass: rgba(234, 244, 254, 0.86);
+      --bg-segmented: #D5E8FA;
+      --bg-card-inner: #F4F9FF;
       
       --primary: #0A84FF;
       --primary-gradient: linear-gradient(180deg, #0A84FF 0%, #0062D2 100%);
-      --primary-light: #F0F6FF;
+      --primary-light: #E5F1FF;
       --primary-dark: #0051B5;
+      --primary-shadow: rgba(10, 132, 255, 0.25);
+      --primary-border: rgba(10, 132, 255, 0.22);
       
       --success: #34C759;
       --success-bg: #E8F5E9;
@@ -40,12 +44,29 @@
       --text-secondary: #636366;
       --text-muted: #8E8E93;
       
-      --border-hairline: rgba(60, 60, 67, 0.14);
-      --border-strong: #D1D1D6;
+      --border-hairline: rgba(60, 60, 67, 0.12);
+      --border-strong: #C7D8EB;
 
       --radius-sm: 10px;
       --radius-md: 14px;
       --radius-lg: 20px;
+    }
+
+    /* Tema Rayssa (Roseado Suave) */
+    body.theme-rayssa {
+      --bg-primary: #FDF0F5;
+      --bg-glass: rgba(253, 240, 245, 0.86);
+      --bg-segmented: #F5DCE6;
+      --bg-card-inner: #FFF7FA;
+      
+      --primary: #E03E7A;
+      --primary-gradient: linear-gradient(180deg, #EC4899 0%, #C82869 100%);
+      --primary-light: #FCE7F0;
+      --primary-dark: #9D174D;
+      --primary-shadow: rgba(224, 62, 122, 0.25);
+      --primary-border: rgba(224, 62, 122, 0.22);
+
+      --border-strong: #DFC5D0;
     }
 
     * {
@@ -62,6 +83,7 @@
       color: var(--text-primary);
       min-height: 100vh;
       padding-bottom: 70px;
+      transition: background-color 0.35s ease;
     }
 
     #loadingScreen {
@@ -96,6 +118,7 @@
       -webkit-backdrop-filter: saturate(180%) blur(20px);
       border-bottom: 0.5px solid var(--border-hairline);
       padding: 14px 20px 16px;
+      transition: background-color 0.35s ease;
     }
 
     .app-shell {
@@ -113,10 +136,11 @@
 
     .brand-title span {
       font-size: 0.72rem;
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.8px;
-      color: var(--text-muted);
+      color: var(--primary);
+      transition: color 0.3s ease;
     }
 
     .brand-title h1 {
@@ -145,7 +169,7 @@
       align-items: center;
       justify-content: center;
       gap: 4px;
-      transition: transform 0.12s ease, opacity 0.12s ease;
+      transition: transform 0.12s ease, opacity 0.12s ease, background-color 0.3s ease;
       white-space: nowrap;
     }
 
@@ -157,7 +181,7 @@
     .btn-ios-primary {
       background: var(--primary-gradient);
       color: #FFFFFF;
-      box-shadow: 0 3px 10px rgba(10, 132, 255, 0.3);
+      box-shadow: 0 3px 10px var(--primary-shadow);
     }
 
     .btn-ios-secondary {
@@ -170,24 +194,25 @@
       background: var(--bg-segmented);
       border-radius: 99px;
       padding: 3px;
+      transition: background-color 0.3s ease;
     }
 
     .parent-btn {
       background: transparent;
       color: var(--text-secondary);
       border: none;
-      padding: 5px 12px;
+      padding: 5px 13px;
       border-radius: 99px;
       font-size: 0.78rem;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.22s ease;
     }
 
     .parent-btn.active {
-      background: var(--bg-elevated);
-      color: var(--text-primary);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      background: var(--primary-gradient);
+      color: #FFFFFF;
+      box-shadow: 0 2px 6px var(--primary-shadow);
     }
 
     .container {
@@ -233,7 +258,7 @@
     .kid-tab {
       flex: 1;
       min-width: 140px;
-      background: var(--bg-primary);
+      background: var(--bg-card-inner);
       border: 1.5px solid var(--border-strong);
       border-radius: var(--radius-md);
       padding: 12px;
@@ -241,7 +266,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      transition: all 0.2s ease;
+      transition: all 0.25s ease;
     }
 
     .kid-tab.active {
@@ -260,6 +285,7 @@
       color: var(--primary);
       font-weight: 700;
       margin-top: 2px;
+      transition: color 0.3s ease;
     }
 
     .kid-edit-btn {
@@ -287,18 +313,19 @@
       font-size: 0.95rem;
       border: 1px solid var(--border-strong);
       border-radius: 10px;
-      background: var(--bg-primary);
+      background: var(--bg-card-inner);
       color: var(--text-primary);
       outline: none;
       box-sizing: border-box;
       -webkit-appearance: none;
       appearance: none;
+      transition: border-color 0.2s ease, background-color 0.3s ease;
     }
 
     input:focus, select:focus {
       border-color: var(--primary);
       background: #FFFFFF;
-      box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.15);
+      box-shadow: 0 0 0 3px var(--primary-shadow);
     }
 
     .grid-2 {
@@ -330,7 +357,7 @@
     }
 
     .symptom-chip {
-      background: var(--bg-primary);
+      background: var(--bg-card-inner);
       border: 1.5px solid var(--border-strong);
       border-radius: 99px;
       padding: 7px 13px;
@@ -339,7 +366,7 @@
       color: var(--text-secondary);
       cursor: pointer;
       white-space: nowrap;
-      transition: all 0.15s ease;
+      transition: all 0.2s ease;
     }
 
     .symptom-chip.active {
@@ -364,6 +391,7 @@
       font-weight: 600;
       color: var(--text-secondary);
       cursor: pointer;
+      transition: background-color 0.3s ease;
     }
 
     .tag-btn:active {
@@ -382,7 +410,7 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      transition: transform 0.12s ease, opacity 0.12s ease;
+      transition: transform 0.12s ease, opacity 0.12s ease, background 0.3s ease;
     }
 
     .btn:active { opacity: 0.85; transform: scale(0.98); }
@@ -391,12 +419,12 @@
     .btn-primary { 
       background: var(--primary-gradient); 
       color: #FFFFFF; 
-      box-shadow: 0 4px 12px rgba(10, 132, 255, 0.25);
+      box-shadow: 0 4px 12px var(--primary-shadow);
     }
     
     .btn-success { background: var(--success); color: #FFFFFF; }
     .btn-whatsapp { background: #25D366; color: #FFFFFF; font-weight: 700; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25); }
-    .btn-outline { background: var(--bg-primary); color: var(--text-primary); border: 0.5px solid var(--border-strong); }
+    .btn-outline { background: var(--bg-card-inner); color: var(--text-primary); border: 0.5px solid var(--border-strong); }
     .btn-danger { background: var(--danger-bg); color: var(--danger); }
 
     .med-list {
@@ -409,10 +437,11 @@
       border: 0.5px solid var(--border-hairline);
       border-radius: var(--radius-md);
       padding: 14px;
-      background: var(--bg-primary);
+      background: var(--bg-card-inner);
       display: flex;
       flex-direction: column;
       gap: 10px;
+      transition: background-color 0.3s ease;
     }
 
     .med-top {
@@ -436,7 +465,7 @@
 
     .dose-highlight {
       background: var(--primary-light);
-      border: 0.5px solid rgba(10, 132, 255, 0.2);
+      border: 0.5px solid var(--primary-border);
       color: var(--primary-dark);
       padding: 10px 12px;
       border-radius: 10px;
@@ -445,6 +474,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      transition: all 0.3s ease;
     }
 
     .timer-badge {
@@ -462,7 +492,7 @@
 
     .log-item {
       border-left: 4px solid var(--primary);
-      background: var(--bg-primary);
+      background: var(--bg-card-inner);
       padding: 12px;
       border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
       margin-bottom: 8px;
@@ -470,6 +500,7 @@
       justify-content: space-between;
       align-items: center;
       gap: 10px;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
     }
 
     .log-item.high-fever {
@@ -571,15 +602,15 @@
       <div class="app-shell">
         <div class="nav-bar">
           <div class="brand-title">
-            <span>Saúde Infantil</span>
+            <span id="labelResponsavelTopo">Modo • Wilson</span>
             <h1>Rocha Batista</h1>
           </div>
           <div class="nav-actions">
             <button class="btn-ios btn-ios-secondary" onclick="abrirConfigIA()" title="Configurar IA">🤖 Config. IA</button>
             <button class="btn-ios btn-ios-secondary" onclick="enviarRelatorioWhatsApp()" title="Enviar relatório no WhatsApp">📄 Relatório</button>
             <div class="parent-toggle">
-              <button type="button" id="btnPai" class="parent-btn active" onclick="setParent('Wilson')">Wilson</button>
-              <button type="button" id="btnMae" class="parent-btn" onclick="setParent('Rayssa')">Rayssa</button>
+              <button type="button" id="btnPai" class="parent-btn active" onclick="setParent('Wilson')">👨🏻 Wilson</button>
+              <button type="button" id="btnMae" class="parent-btn" onclick="setParent('Rayssa')">👩🏻 Rayssa</button>
             </div>
           </div>
         </div>
@@ -702,7 +733,7 @@
     <div class="modal-sheet">
       <h3>💊 Adicionar Medicamento</h3>
 
-      <div class="form-group" style="background: var(--primary-light); padding: 12px; border-radius: 12px; border: 1px solid rgba(10, 132, 255, 0.25);">
+      <div class="form-group" style="background: var(--primary-light); padding: 12px; border-radius: 12px; border: 1px solid var(--primary-border);">
         <label style="color: var(--primary-dark);">⚡ Catálogo Pediátrico Seguro (Preenchimento Automático)</label>
         <select id="catalogoRapido" onchange="selecionarDoCatalogo()" style="background: #FFFFFF;">
           <option value="">-- Escolha um remédio da base segura ou digite abaixo --</option>
@@ -1029,7 +1060,6 @@
 
     let iaConfig = JSON.parse(localStorage.getItem(SYNC_CONFIG_KEY)) || { geminiKey: '' };
 
-    // Garante correção de segurança caso o Ibuprofeno 100mg antigo esteja com fator 2.0
     function auditarSegurancaMeds() {
       let corrigido = false;
       if (estado.meds && Array.isArray(estado.meds)) {
@@ -1044,6 +1074,23 @@
         });
       }
       return corrigido;
+    }
+
+    function aplicarTemaResponsavel() {
+      const isRayssa = estado.parentAtivo === 'Rayssa';
+      document.body.classList.toggle('theme-rayssa', isRayssa);
+      document.getElementById('btnPai').classList.toggle('active', !isRayssa);
+      document.getElementById('btnMae').classList.toggle('active', isRayssa);
+      
+      const labelTopo = document.getElementById('labelResponsavelTopo');
+      if (labelTopo) {
+        labelTopo.textContent = isRayssa ? 'Modo • Rayssa' : 'Modo • Wilson';
+      }
+
+      const metaTheme = document.getElementById('metaThemeColor');
+      if (metaTheme) {
+        metaTheme.setAttribute('content', isRayssa ? '#FDF0F5' : '#EAF4FE');
+      }
     }
 
     auditarSegurancaMeds();
@@ -1217,9 +1264,9 @@
 
     function setParent(nome) {
       estado.parentAtivo = nome;
-      document.getElementById('btnPai').classList.toggle('active', nome === 'Wilson');
-      document.getElementById('btnMae').classList.toggle('active', nome === 'Rayssa');
+      aplicarTemaResponsavel();
       salvarNoAparelho();
+      mostrarToast(`Perfil alterado para ${nome}`);
     }
 
     function selecionarFilho(id) {
@@ -1528,8 +1575,7 @@
     }
 
     function renderizarTudo() {
-      document.getElementById('btnPai').classList.toggle('active', estado.parentAtivo === 'Wilson');
-      document.getElementById('btnMae').classList.toggle('active', estado.parentAtivo === 'Rayssa');
+      aplicarTemaResponsavel();
 
       const kid = getFilhoAtivo();
       document.getElementById('nomeFilhoAtivo').textContent = kid.nome;
